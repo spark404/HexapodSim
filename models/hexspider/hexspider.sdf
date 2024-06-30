@@ -1,24 +1,99 @@
-<?xml version="1.0"?>
-<sdf version="1.6">
+<sdf version="1.10">
   <model name="hexspider" canonical_link="chassis">
     <pose>0 0 0 0 0 0</pose>
-
-    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"></plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_a_servo_1</joint_name>
+      <p_gain>10</p_gain>
     </plugin>
-
-    <!-- Main body -->
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_a_servo_2</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_a_servo_3</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_b_servo_1</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_b_servo_2</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_b_servo_3</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_c_servo_1</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_c_servo_2</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_c_servo_3</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_d_servo_1</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_d_servo_2</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_d_servo_3</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_e_servo_1</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_e_servo_2</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_e_servo_3</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_f_servo_1</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_f_servo_2</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
+    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+      <joint_name>leg_f_servo_3</joint_name>
+      <p_gain>10</p_gain>
+    </plugin>
     <link name="chassis">
       <pose relative_to="__model__">0 0 0.1 0 0 0</pose>
-      <inertial auto="1">
-        <mass>0.190845</mass>
-        <density>0.001</density>
+      <inertial>
+        <mass>0.188490</mass>
+        <density>100</density>
+        <inertia>
+          <ixx>4.024e-04</ixx>
+          <ixy>5.662e-19</ixy>
+          <ixz>-5.234e-18</ixz>
+          <iyy>2.646e-04</iyy>
+          <iyz>0</iyz>
+          <izz>5.502e-04</izz>
+        </inertia>
       </inertial>
       <visual name="chassis_visual">
         <geometry>
           <mesh>
-          <uri>model://hexspider/meshes/Chassis_v37.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
+            <uri>model://hexspider/meshes/Chassis_v37.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
         </geometry>
         <material>
           <ambient>0 0 1 1</ambient>
@@ -36,33 +111,33 @@
         </geometry>
       </collision>
     </link>
-
-    <!-- Leg A 2XL-430 -->
     <link name="leg_a_2xl_430">
       <pose relative_to="chassis">0.058219 -0.083748 0.0 0 0 0.61</pose>
-      <inertial >
+      <inertial>
         <mass>0.098</mass>
         <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
       </inertial>
       <visual name="visual">
         <geometry>
           <mesh>
-          <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
+            <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
         </geometry>
         <material>
           <ambient>1.0 0.0 0.0 1</ambient>
           <diffuse>1.0 0.0 0.0 1</diffuse>
           <specular>1.0 0.0 0.0 1</specular>
         </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
         <geometry>
@@ -72,38 +147,25 @@
         </geometry>
       </collision>
     </link>
-    <joint name="leg_a_servo_1" type="revolute">
-      <pose relative_to="leg_a_2xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>chassis</parent>
-      <child>leg_a_2xl_430</child>
-      <axis>
-        <xyz expressed_in="__model__">0 0 1</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
-        <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
-        </limit>
-      </axis>
-    </joint>    
-
-    <!-- Leg A Coxa -->
     <link name="leg_a_coxa">
       <pose relative_to="leg_a_2xl_430">0 -0.062 0 0 0 0</pose>
-      <inertial auto="1">
+      <inertial>
         <mass>0.059976</mass>
-        <density>0.001</density>
+        <inertia>
+          <ixx>0.000019426</ixx>
+          <ixy>-7.7e-11</ixy>
+          <ixz>4.885e-14</ixz>
+          <iyy>0.000032981</iyy>
+          <iyz>0</iyz>
+          <izz>0.000046665</izz>
+        </inertia>
       </inertial>
       <visual name="visual">
         <pose relative_to="leg_a_coxa">0.0 -0.144 0 0 0 1.57</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
-            <scale>0.001 0.001 0.001</scale>  
+            <scale>0.001 0.001 0.001</scale>
           </mesh>
         </geometry>
         <material>
@@ -111,6 +173,8 @@
           <diffuse>0 0 1 1</diffuse>
           <specular>0 0 1 1</specular>
         </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
         <geometry>
@@ -119,46 +183,26 @@
           </box>
         </geometry>
       </collision>
-    </link>    
-    <joint name="leg_a_servo_2" type="revolute">
-      <pose relative_to="leg_a_2xl_430">0 -0.012 0.000 0 0 0</pose>
-      <parent>leg_a_2xl_430</parent>
-      <child>leg_a_coxa</child>
-      <axis>
-        <xyz expressed_in="leg_a_2xl_430">1 0 0</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
-        <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
-        </limit>
-      </axis>
-    </joint>    
-
-    <!-- Leg A XL-430 -->
+    </link>
     <link name="leg_a_xl_430">
       <pose relative_to="leg_a_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
-      <inertial >
+      <inertial>
         <mass>0.098</mass>
         <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
       </inertial>
       <visual name="visual">
         <geometry>
           <mesh>
-          <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
+            <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
         </geometry>
         <material>
           <ambient>1 0 0 1</ambient>
@@ -176,39 +220,26 @@
         </geometry>
       </collision>
     </link>
-    <joint name="leg_a_servo_3" type="revolute">
-      <pose relative_to="leg_a_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_a_coxa</parent>
-      <child>leg_a_xl_430</child>
-      <axis>
-        <xyz expressed_in="leg_a_xl_430">0 0 1</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
-        <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
-        </limit>
-      </axis>
-    </joint>    
-
-    <!-- Leg A Femur -->
     <link name="leg_a_femur">
       <pose relative_to="leg_a_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
-      <inertial auto="1">
+      <inertial>
         <mass>0.028812</mass>
-        <density>0.001</density>
+        <inertia>
+          <ixx>0.000034156</ixx>
+          <ixy>0</ixy>
+          <ixz>0.000012503</ixz>
+          <iyy>0.000036442</iyy>
+          <iyz>0</iyz>
+          <izz>0.000010478</izz>
+        </inertia>
       </inertial>
       <visual name="visual">
         <pose relative_to="leg_a_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
         <geometry>
           <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
+            <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
         </geometry>
         <material>
           <ambient>0 0 1 1</ambient>
@@ -219,47 +250,42 @@
         <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
-        <pose relative_to="leg_a_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <pose relative_to="leg_a_femur">0 0 0.012 0 -0.96 0</pose>
         <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
+          <cylinder>
+           <radius>0.005</radius>
+           <length>0.150</length>
+           </cylinder>
         </geometry>
       </collision>
-    </link>    
-    <joint name="leg_a_femur_joint" type="fixed">
-      <pose relative_to="leg_a_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_a_xl_430</parent>
-      <child>leg_a_femur</child>
-    </joint>    
-
-    <!-- Leg B 2XL-430 -->
+    </link>
     <link name="leg_b_2xl_430">
       <pose relative_to="chassis">0.082 0 0.0 0 0 1.57</pose>
-      <inertial >
+      <inertial>
         <mass>0.098</mass>
         <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
       </inertial>
       <visual name="visual">
         <geometry>
           <mesh>
-          <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
+            <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
         </geometry>
         <material>
           <ambient>1.0 0.0 0.0 1</ambient>
           <diffuse>1.0 0.0 0.0 1</diffuse>
           <specular>1.0 0.0 0.0 1</specular>
         </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
         <geometry>
@@ -269,6 +295,763 @@
         </geometry>
       </collision>
     </link>
+    <link name="leg_b_coxa">
+      <pose relative_to="leg_b_2xl_430">0 -0.062 0 0 0 0</pose>
+      <inertial>
+        <mass>0.059976</mass>
+        <inertia>
+          <ixx>0.000019426</ixx>
+          <ixy>-7.7e-11</ixy>
+          <ixz>4.885e-14</ixz>
+          <iyy>0.000032981</iyy>
+          <iyz>0</iyz>
+          <izz>0.000046665</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_b_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.046 0.124 0.024</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_b_xl_430">
+      <pose relative_to="leg_b_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>1 0 0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.0285 0.0465 0.034</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_b_femur">
+      <pose relative_to="leg_b_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+      <inertial>
+        <mass>0.028812</mass>
+        <inertia>
+          <ixx>0.000034156</ixx>
+          <ixy>0</ixy>
+          <ixz>0.000012503</ixz>
+          <iyy>0.000036442</iyy>
+          <iyz>0</iyz>
+          <izz>0.000010478</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_b_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <pose relative_to="leg_b_femur">0 0 0.012 0 -0.96 0</pose>
+        <geometry>
+          <cylinder>
+           <radius>0.005</radius>
+           <length>0.150</length>
+           </cylinder>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_c_2xl_430">
+      <pose relative_to="chassis">0.058219 0.083748 0.0 0 0 2.53</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 0.0 0.0 1</ambient>
+          <diffuse>1.0 0.0 0.0 1</diffuse>
+          <specular>1.0 0.0 0.0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.036 0.0465 0.036</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_c_coxa">
+      <pose relative_to="leg_c_2xl_430">0 -0.062 0 0 0 0</pose>
+      <inertial>
+        <mass>0.059976</mass>
+        <inertia>
+          <ixx>0.000019426</ixx>
+          <ixy>-7.7e-11</ixy>
+          <ixz>4.885e-14</ixz>
+          <iyy>0.000032981</iyy>
+          <iyz>0</iyz>
+          <izz>0.000046665</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_c_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.046 0.124 0.024</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_c_xl_430">
+      <pose relative_to="leg_c_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>1 0 0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.0285 0.0465 0.034</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_c_femur">
+      <pose relative_to="leg_c_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+      <inertial>
+        <mass>0.028812</mass>
+        <inertia>
+          <ixx>0.000034156</ixx>
+          <ixy>0</ixy>
+          <ixz>0.000012503</ixz>
+          <iyy>0.000036442</iyy>
+          <iyz>0</iyz>
+          <izz>0.000010478</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_c_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <pose relative_to="leg_c_femur">0 0 0.012 0 -0.96 0</pose>
+        <geometry>
+          <cylinder>
+           <radius>0.005</radius>
+           <length>0.150</length>
+           </cylinder>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_d_2xl_430">
+      <pose relative_to="chassis">-0.058219 -0.083748 0.0 0 0 -0.61</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 0.0 0.0 1</ambient>
+          <diffuse>1.0 0.0 0.0 1</diffuse>
+          <specular>1.0 0.0 0.0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.036 0.0465 0.036</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_d_coxa">
+      <pose relative_to="leg_d_2xl_430">0 -0.062 0 0 0 0</pose>
+      <inertial>
+        <mass>0.059976</mass>
+        <inertia>
+          <ixx>0.000019426</ixx>
+          <ixy>-7.7e-11</ixy>
+          <ixz>4.885e-14</ixz>
+          <iyy>0.000032981</iyy>
+          <iyz>0</iyz>
+          <izz>0.000046665</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_d_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.046 0.124 0.024</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_d_xl_430">
+      <pose relative_to="leg_d_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>1 0 0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.0285 0.0465 0.034</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_d_femur">
+      <pose relative_to="leg_d_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+      <inertial>
+        <mass>0.028812</mass>
+        <inertia>
+          <ixx>0.000034156</ixx>
+          <ixy>0</ixy>
+          <ixz>0.000012503</ixz>
+          <iyy>0.000036442</iyy>
+          <iyz>0</iyz>
+          <izz>0.000010478</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_d_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <pose relative_to="leg_d_femur">0 0 0.012 0 -0.96 0</pose>
+        <geometry>
+          <cylinder>
+           <radius>0.005</radius>
+           <length>0.150</length>
+           </cylinder>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_e_2xl_430">
+      <pose relative_to="chassis">-0.082 0 0.0 0 0 -1.57</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 0.0 0.0 1</ambient>
+          <diffuse>1.0 0.0 0.0 1</diffuse>
+          <specular>1.0 0.0 0.0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.036 0.0465 0.036</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_e_coxa">
+      <pose relative_to="leg_e_2xl_430">0 -0.062 0 0 0 0</pose>
+      <inertial>
+        <mass>0.059976</mass>
+        <inertia>
+          <ixx>0.000019426</ixx>
+          <ixy>-7.7e-11</ixy>
+          <ixz>4.885e-14</ixz>
+          <iyy>0.000032981</iyy>
+          <iyz>0</iyz>
+          <izz>0.000046665</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_e_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.046 0.124 0.024</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_e_xl_430">
+      <pose relative_to="leg_e_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>1 0 0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.0285 0.0465 0.034</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_e_femur">
+      <pose relative_to="leg_e_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+      <inertial>
+        <mass>0.028812</mass>
+        <inertia>
+          <ixx>0.000034156</ixx>
+          <ixy>0</ixy>
+          <ixz>0.000012503</ixz>
+          <iyy>0.000036442</iyy>
+          <iyz>0</iyz>
+          <izz>0.000010478</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_e_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <pose relative_to="leg_e_femur">0 0 0.012 0 -0.96 0</pose>
+        <geometry>
+          <cylinder>
+           <radius>0.005</radius>
+           <length>0.150</length>
+           </cylinder>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_f_2xl_430">
+      <pose relative_to="chassis">-0.058219 0.083748 0.0 0 0 -2.53</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 0.0 0.0 1</ambient>
+          <diffuse>1.0 0.0 0.0 1</diffuse>
+          <specular>1.0 0.0 0.0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.036 0.0465 0.036</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_f_coxa">
+      <pose relative_to="leg_f_2xl_430">0 -0.062 0 0 0 0</pose>
+      <inertial>
+        <mass>0.059976</mass>
+        <inertia>
+          <ixx>0.000019426</ixx>
+          <ixy>-7.7e-11</ixy>
+          <ixz>4.885e-14</ixz>
+          <iyy>0.000032981</iyy>
+          <iyz>0</iyz>
+          <izz>0.000046665</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_f_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.046 0.124 0.024</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_f_xl_430">
+      <pose relative_to="leg_f_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+      <inertial>
+        <mass>0.098</mass>
+        <inertia>
+          <ixx>0.00002686</ixx>
+          <ixy>0.000000525</ixy>
+          <ixz>0.000000288</ixz>
+          <iyy>0.000016993</iyy>
+          <iyz>-0.000000524</iyz>
+          <izz>0.000026995</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient>
+          <diffuse>1 0 0 1</diffuse>
+          <specular>1 0 0 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.0285 0.0465 0.034</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+    <link name="leg_f_femur">
+      <pose relative_to="leg_f_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+      <inertial>
+        <mass>0.028812</mass>
+        <inertia>
+          <ixx>0.000034156</ixx>
+          <ixy>0</ixy>
+          <ixz>0.000012503</ixz>
+          <iyy>0.000036442</iyy>
+          <iyz>0</iyz>
+          <izz>0.000010478</izz>
+        </inertia>
+      </inertial>
+      <visual name="visual">
+        <pose relative_to="leg_f_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+        </material>
+        <transparency>0</transparency>
+        <cast_shadows>1</cast_shadows>
+      </visual>
+      <collision name="collision">
+        <pose relative_to="leg_f_femur">0 0 0.012 0 -0.96 0</pose>
+        <geometry>
+          <cylinder>
+           <radius>0.005</radius>
+           <length>0.150</length>
+           </cylinder>
+        </geometry>
+      </collision>
+    </link>
+    <joint name="leg_a_servo_1" type="revolute">
+      <pose relative_to="leg_a_2xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>chassis</parent>
+      <child>leg_a_2xl_430</child>
+      <axis>
+        <xyz expressed_in="__model__">0 0 1</xyz>
+        <limit>
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.57</lower>
+          <upper>1.57</upper>
+        </limit>
+      </axis>
+    </joint>
+    <joint name="leg_a_servo_2" type="revolute">
+      <pose relative_to="leg_a_2xl_430">0 -0.012 0.000 0 0 0</pose>
+      <parent>leg_a_2xl_430</parent>
+      <child>leg_a_coxa</child>
+      <axis>
+        <xyz expressed_in="leg_a_2xl_430">1 0 0</xyz>
+        <limit>
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <joint name="leg_a_servo_3" type="revolute">
+      <pose relative_to="leg_a_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_a_coxa</parent>
+      <child>leg_a_xl_430</child>
+      <axis>
+        <xyz expressed_in="leg_a_xl_430">0 0 1</xyz>
+        <limit>
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
+        </limit>
+        <dynamics>
+          <damping>0</damping>
+        </dynamics>
+      </axis>
+    </joint>
+    <joint name="leg_a_femur_joint" type="fixed">
+      <pose relative_to="leg_a_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_a_xl_430</parent>
+      <child>leg_a_femur</child>
+    </joint>
     <joint name="leg_b_servo_1" type="revolute">
       <pose relative_to="leg_b_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
@@ -279,44 +1062,13 @@
           <damping>0.5</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-0.78539</lower>
+          <upper>0.78539</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg B Coxa -->
-    <link name="leg_b_coxa">
-      <pose relative_to="leg_b_2xl_430">0 -0.062 0 0 0 0</pose>
-      <inertial auto="1">
-        <mass>0.059976</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_b_coxa">0.0 -0.144 0 0 0 1.57</pose>
-        <geometry>
-          <mesh>
-            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
-            <scale>0.001 0.001 0.001</scale>  
-          </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.046 0.124 0.024</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_b_servo_2" type="revolute">
       <pose relative_to="leg_b_2xl_430">0 -0.012 0.000 0 0 0</pose>
       <parent>leg_b_2xl_430</parent>
@@ -324,55 +1076,16 @@
       <axis>
         <xyz expressed_in="leg_b_2xl_430">1 0 0</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg B XL-430 -->
-    <link name="leg_b_xl_430">
-      <pose relative_to="leg_b_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1 0 0 1</ambient>
-          <diffuse>1 0 0 1</diffuse>
-          <specular>1 0 0 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.0285 0.0465 0.034</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_b_servo_3" type="revolute">
       <pose relative_to="leg_b_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_b_coxa</parent>
@@ -380,92 +1093,21 @@
       <axis>
         <xyz expressed_in="leg_b_xl_430">0 0 1</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg B Femur -->
-    <link name="leg_b_femur">
-      <pose relative_to="leg_b_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
-      <inertial auto="1">
-        <mass>0.028812</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_b_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <pose relative_to="leg_b_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_b_femur_joint" type="fixed">
       <pose relative_to="leg_b_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_b_xl_430</parent>
       <child>leg_b_femur</child>
-    </joint>   
-
-    <!-- Leg C 2XL-430 -->
-    <link name="leg_c_2xl_430">
-      <pose relative_to="chassis">0.058219 0.083748 0.0 0 0 2.53</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1.0 0.0 0.0 1</ambient>
-          <diffuse>1.0 0.0 0.0 1</diffuse>
-          <specular>1.0 0.0 0.0 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.036 0.0465 0.036</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_c_servo_1" type="revolute">
       <pose relative_to="leg_c_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
@@ -476,44 +1118,13 @@
           <damping>0.5</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-0.78539</lower>
+          <upper>0.78539</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg C Coxa -->
-    <link name="leg_c_coxa">
-      <pose relative_to="leg_c_2xl_430">0 -0.062 0 0 0 0</pose>
-      <inertial auto="1">
-        <mass>0.059976</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_c_coxa">0.0 -0.144 0 0 0 1.57</pose>
-        <geometry>
-          <mesh>
-            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
-            <scale>0.001 0.001 0.001</scale>  
-          </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.046 0.124 0.024</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_c_servo_2" type="revolute">
       <pose relative_to="leg_c_2xl_430">0 -0.012 0.000 0 0 0</pose>
       <parent>leg_c_2xl_430</parent>
@@ -521,55 +1132,16 @@
       <axis>
         <xyz expressed_in="leg_c_2xl_430">1 0 0</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg C XL-430 -->
-    <link name="leg_c_xl_430">
-      <pose relative_to="leg_c_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1 0 0 1</ambient>
-          <diffuse>1 0 0 1</diffuse>
-          <specular>1 0 0 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.0285 0.0465 0.034</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_c_servo_3" type="revolute">
       <pose relative_to="leg_c_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_c_coxa</parent>
@@ -577,92 +1149,21 @@
       <axis>
         <xyz expressed_in="leg_c_xl_430">0 0 1</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg C Femur -->
-    <link name="leg_c_femur">
-      <pose relative_to="leg_c_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
-      <inertial auto="1">
-        <mass>0.028812</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_c_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <pose relative_to="leg_c_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_c_femur_joint" type="fixed">
       <pose relative_to="leg_c_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_c_xl_430</parent>
       <child>leg_c_femur</child>
-    </joint>    
-
-    <!-- Leg D 2XL-430 -->
-    <link name="leg_d_2xl_430">
-      <pose relative_to="chassis">-0.058219 -0.083748 0.0 0 0 -0.61</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1.0 0.0 0.0 1</ambient>
-          <diffuse>1.0 0.0 0.0 1</diffuse>
-          <specular>1.0 0.0 0.0 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.036 0.0465 0.036</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_d_servo_1" type="revolute">
       <pose relative_to="leg_d_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
@@ -673,44 +1174,13 @@
           <damping>0.5</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-0.78539</lower>
+          <upper>0.78539</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg D Coxa -->
-    <link name="leg_d_coxa">
-      <pose relative_to="leg_d_2xl_430">0 -0.062 0 0 0 0</pose>
-      <inertial auto="1">
-        <mass>0.059976</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_d_coxa">0.0 -0.144 0 0 0 1.57</pose>
-        <geometry>
-          <mesh>
-            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
-            <scale>0.001 0.001 0.001</scale>  
-          </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.046 0.124 0.024</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_d_servo_2" type="revolute">
       <pose relative_to="leg_d_2xl_430">0 -0.012 0.000 0 0 0</pose>
       <parent>leg_d_2xl_430</parent>
@@ -718,55 +1188,16 @@
       <axis>
         <xyz expressed_in="leg_d_2xl_430">1 0 0</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg D XL-430 -->
-    <link name="leg_d_xl_430">
-      <pose relative_to="leg_d_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1 0 0 1</ambient>
-          <diffuse>1 0 0 1</diffuse>
-          <specular>1 0 0 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.0285 0.0465 0.034</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_d_servo_3" type="revolute">
       <pose relative_to="leg_d_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_d_coxa</parent>
@@ -774,92 +1205,21 @@
       <axis>
         <xyz expressed_in="leg_d_xl_430">0 0 1</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg D Femur -->
-    <link name="leg_d_femur">
-      <pose relative_to="leg_d_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
-      <inertial auto="1">
-        <mass>0.028812</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_d_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <pose relative_to="leg_d_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_d_femur_joint" type="fixed">
       <pose relative_to="leg_d_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_d_xl_430</parent>
       <child>leg_d_femur</child>
-    </joint>    
-
-    <!-- Leg E 2XL-430 -->
-    <link name="leg_e_2xl_430">
-      <pose relative_to="chassis">-0.082 0 0.0 0 0 -1.57</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1.0 0.0 0.0 1</ambient>
-          <diffuse>1.0 0.0 0.0 1</diffuse>
-          <specular>1.0 0.0 0.0 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.036 0.0465 0.036</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_e_servo_1" type="revolute">
       <pose relative_to="leg_e_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
@@ -870,44 +1230,13 @@
           <damping>0.5</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-0.78539</lower>
+          <upper>0.78539</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg E Coxa -->
-    <link name="leg_e_coxa">
-      <pose relative_to="leg_e_2xl_430">0 -0.062 0 0 0 0</pose>
-      <inertial auto="1">
-        <mass>0.059976</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_e_coxa">0.0 -0.144 0 0 0 1.57</pose>
-        <geometry>
-          <mesh>
-            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
-            <scale>0.001 0.001 0.001</scale>  
-          </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.046 0.124 0.024</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_e_servo_2" type="revolute">
       <pose relative_to="leg_e_2xl_430">0 -0.012 0.000 0 0 0</pose>
       <parent>leg_e_2xl_430</parent>
@@ -915,55 +1244,16 @@
       <axis>
         <xyz expressed_in="leg_e_2xl_430">1 0 0</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg E XL-430 -->
-    <link name="leg_e_xl_430">
-      <pose relative_to="leg_e_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1 0 0 1</ambient>
-          <diffuse>1 0 0 1</diffuse>
-          <specular>1 0 0 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.0285 0.0465 0.034</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_e_servo_3" type="revolute">
       <pose relative_to="leg_e_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_e_coxa</parent>
@@ -971,92 +1261,21 @@
       <axis>
         <xyz expressed_in="leg_e_xl_430">0 0 1</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg E Femur -->
-    <link name="leg_e_femur">
-      <pose relative_to="leg_e_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
-      <inertial auto="1">
-        <mass>0.028812</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_e_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <pose relative_to="leg_e_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_e_femur_joint" type="fixed">
       <pose relative_to="leg_e_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_e_xl_430</parent>
       <child>leg_e_femur</child>
-    </joint>   
-
-    <!-- Leg F 2XL-430 -->
-    <link name="leg_f_2xl_430">
-      <pose relative_to="chassis">-0.058219 0.083748 0.0 0 0 -2.53</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/2XL-430_v4.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1.0 0.0 0.0 1</ambient>
-          <diffuse>1.0 0.0 0.0 1</diffuse>
-          <specular>1.0 0.0 0.0 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.036 0.0465 0.036</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_f_servo_1" type="revolute">
       <pose relative_to="leg_f_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
@@ -1067,44 +1286,13 @@
           <damping>0.5</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-0.78539</lower>
+          <upper>0.78539</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg F Coxa -->
-    <link name="leg_f_coxa">
-      <pose relative_to="leg_f_2xl_430">0 -0.062 0 0 0 0</pose>
-      <inertial auto="1">
-        <mass>0.059976</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_f_coxa">0.0 -0.144 0 0 0 1.57</pose>
-        <geometry>
-          <mesh>
-            <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
-            <scale>0.001 0.001 0.001</scale>  
-          </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.046 0.124 0.024</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_f_servo_2" type="revolute">
       <pose relative_to="leg_f_2xl_430">0 -0.012 0.000 0 0 0</pose>
       <parent>leg_f_2xl_430</parent>
@@ -1112,55 +1300,16 @@
       <axis>
         <xyz expressed_in="leg_f_2xl_430">1 0 0</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg F XL-430 -->
-    <link name="leg_f_xl_430">
-      <pose relative_to="leg_f_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
-      <inertial >
-        <mass>0.098</mass>
-        <inertia>
-          <ixx>2.6860342e+04</ixx>
-          <ixy>5.2509055e+02</ixy>
-          <ixz>2.8762176e+02</ixz>
-          <iyy>1.6993207e+04</iyy>
-          <iyz>-5.2385082e+02</iyz>
-          <izz>2.6995309e+04</izz>
-        </inertia>        
-      </inertial>
-      <visual name="visual">
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/XL-430_new_v2.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>1 0 0 1</ambient>
-          <diffuse>1 0 0 1</diffuse>
-          <specular>1 0 0 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <geometry>
-          <box>
-            <size>0.0285 0.0465 0.034</size>
-          </box>
-        </geometry>
-      </collision>
-    </link>
+    </joint>
     <joint name="leg_f_servo_3" type="revolute">
       <pose relative_to="leg_f_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_f_coxa</parent>
@@ -1168,98 +1317,20 @@
       <axis>
         <xyz expressed_in="leg_f_xl_430">0 0 1</xyz>
         <dynamics>
-          <damping>0.5</damping>
+          <damping>0</damping>
         </dynamics>
         <limit>
-          <!-- -45 to 45 -->
-          <effort>59.50</effort><!-- N/m, from datasheet -->
-          <velocity>6.38790</velocity><!-- rad/s -->
-          <lower>-0.78539</lower><!-- radians -->
-          <upper>0.78539</upper><!-- radians -->
+          <effort>362</effort>
+          <velocity>6</velocity>
+          <lower>-1.570796</lower>
+          <upper>1.570796</upper>
         </limit>
       </axis>
-    </joint>    
-
-    <!-- Leg F Femur -->
-    <link name="leg_f_femur">
-      <pose relative_to="leg_f_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
-      <inertial auto="1">
-        <mass>0.028812</mass>
-        <density>0.001</density>
-      </inertial>
-      <visual name="visual">
-        <pose relative_to="leg_f_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-        <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-        </material>
-        <transparency>0</transparency>
-        <cast_shadows>1</cast_shadows>
-      </visual>
-      <collision name="collision">
-        <pose relative_to="leg_f_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
-        <geometry>
-          <mesh>
-          <uri>model://hexspider/meshes/Femur_v41.stl</uri>
-          <scale>0.001 0.001 0.001</scale>  
-        </mesh>
-        </geometry>
-      </collision>
-    </link>    
+    </joint>
     <joint name="leg_f_femur_joint" type="fixed">
       <pose relative_to="leg_f_xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>leg_f_xl_430</parent>
       <child>leg_f_femur</child>
-    </joint>    
-
-
-    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_a_servo_1</joint_name>
-      <initial_position>0</initial_position>
-      <use_velocity_commands>1</use_velocity_commands>
-      <p_gain>10</p_gain>
-      <i_gain>0.1</i_gain>
-      <d_gain>0.01</d_gain>
-      <i_max>1</i_max>
-      <i_min>-1</i_min>
-      <cmd_max>1000</cmd_max>
-      <cmd_min>-1000</cmd_min>      
-    </plugin>
-    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_a_servo_2</joint_name>
-      <initial_position>0</initial_position>
-      <use_velocity_commands>1</use_velocity_commands>
-      <p_gain>10</p_gain>
-      <i_gain>0.1</i_gain>
-      <d_gain>0.01</d_gain>
-      <i_max>1</i_max>
-      <i_min>-1</i_min>
-      <cmd_max>1000</cmd_max>
-      <cmd_min>-1000</cmd_min>      
-    </plugin>
-    <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_a_servo_3</joint_name>
-      <initial_position>0</initial_position>
-      <use_velocity_commands>1</use_velocity_commands>
-      <p_gain>10</p_gain>
-      <i_gain>0.1</i_gain>
-      <d_gain>0.01</d_gain>
-      <i_max>1</i_max>
-      <i_min>-1</i_min>
-      <cmd_max>1000</cmd_max>
-      <cmd_min>-1000</cmd_min>      
-    </plugin>
-      
-
-
-
-
+    </joint>
   </model>
 </sdf>
