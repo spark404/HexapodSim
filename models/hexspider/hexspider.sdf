@@ -3,79 +3,79 @@
     <pose>0 0 0 0 0 0</pose>
     <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"></plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_a_servo_1</joint_name>
+      <joint_name>leg_br_servo_1</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_a_servo_2</joint_name>
+      <joint_name>leg_br_servo_2</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_a_servo_3</joint_name>
+      <joint_name>leg_br_servo_3</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_b_servo_1</joint_name>
+      <joint_name>leg_bl_servo_1</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_b_servo_2</joint_name>
+      <joint_name>leg_bl_servo_2</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_b_servo_3</joint_name>
+      <joint_name>leg_bl_servo_3</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_c_servo_1</joint_name>
+      <joint_name>leg_fr_servo_1</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_c_servo_2</joint_name>
+      <joint_name>leg_fr_servo_2</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_c_servo_3</joint_name>
+      <joint_name>leg_fr_servo_3</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_d_servo_1</joint_name>
+      <joint_name>leg_cr_servo_1</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_d_servo_2</joint_name>
+      <joint_name>leg_cr_servo_2</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_d_servo_3</joint_name>
+      <joint_name>leg_cr_servo_3</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_e_servo_1</joint_name>
+      <joint_name>leg_cl_servo_1</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_e_servo_2</joint_name>
+      <joint_name>leg_cl_servo_2</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_e_servo_3</joint_name>
+      <joint_name>leg_cl_servo_3</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_f_servo_1</joint_name>
+      <joint_name>leg_fl_servo_1</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_f_servo_2</joint_name>
+      <joint_name>leg_fl_servo_2</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
-      <joint_name>leg_f_servo_3</joint_name>
+      <joint_name>leg_fl_servo_3</joint_name>
       <p_gain>10</p_gain>
     </plugin>
     <link name="chassis">
-      <pose relative_to="__model__">0 0 0.1 0 0 0</pose>
+      <pose relative_to="__model__">0 0 0.15 0 0 -1.57</pose>
       <inertial>
         <mass>0.188490</mass>
         <density>100</density>
@@ -111,8 +111,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_a_2xl_430">
-      <pose relative_to="chassis">0.058219 -0.083748 0.0 0 0 0.61</pose>
+    <link name="leg_br_2xl_430">
+      <pose relative_to="chassis">0.058219 -0.083748 0.0 0 0 0.610865</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -147,8 +147,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_a_coxa">
-      <pose relative_to="leg_a_2xl_430">0 -0.062 0 0 0 0</pose>
+    <link name="leg_br_coxa">
+      <pose relative_to="leg_br_2xl_430">0 -0.062 0 0 0 0</pose>
       <inertial>
         <mass>0.059976</mass>
         <inertia>
@@ -161,7 +161,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_a_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <pose relative_to="leg_br_coxa">0.0 -0.144 0 0 0 1.57</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
@@ -184,8 +184,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_a_xl_430">
-      <pose relative_to="leg_a_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+    <link name="leg_br_xl_430">
+      <pose relative_to="leg_br_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -220,8 +220,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_a_femur">
-      <pose relative_to="leg_a_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+    <link name="leg_br_femur">
+      <pose relative_to="leg_br_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
       <inertial>
         <mass>0.028812</mass>
         <inertia>
@@ -234,7 +234,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_a_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <pose relative_to="leg_br_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Femur_v41.stl</uri>
@@ -250,7 +250,7 @@
         <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
-        <pose relative_to="leg_a_femur">0 0 0.012 0 -0.96 0</pose>
+        <pose relative_to="leg_br_femur">0 0 0.012 0 -0.96 0</pose>
         <geometry>
           <cylinder>
            <radius>0.005</radius>
@@ -259,8 +259,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_b_2xl_430">
-      <pose relative_to="chassis">0.082 0 0.0 0 0 1.57</pose>
+    <link name="leg_cr_2xl_430">
+      <pose relative_to="chassis">0.082 0 0.0 0 0 1.570796</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -295,8 +295,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_b_coxa">
-      <pose relative_to="leg_b_2xl_430">0 -0.062 0 0 0 0</pose>
+    <link name="leg_cr_coxa">
+      <pose relative_to="leg_cr_2xl_430">0 -0.062 0 0 0 0</pose>
       <inertial>
         <mass>0.059976</mass>
         <inertia>
@@ -309,7 +309,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_b_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <pose relative_to="leg_cr_coxa">0.0 -0.144 0 0 0 1.57</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
@@ -332,8 +332,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_b_xl_430">
-      <pose relative_to="leg_b_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+    <link name="leg_cr_xl_430">
+      <pose relative_to="leg_cr_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -368,8 +368,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_b_femur">
-      <pose relative_to="leg_b_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+    <link name="leg_cr_femur">
+      <pose relative_to="leg_cr_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
       <inertial>
         <mass>0.028812</mass>
         <inertia>
@@ -382,7 +382,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_b_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <pose relative_to="leg_cr_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Femur_v41.stl</uri>
@@ -398,7 +398,7 @@
         <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
-        <pose relative_to="leg_b_femur">0 0 0.012 0 -0.96 0</pose>
+        <pose relative_to="leg_cr_femur">0 0 0.012 0 -0.96 0</pose>
         <geometry>
           <cylinder>
            <radius>0.005</radius>
@@ -407,8 +407,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_c_2xl_430">
-      <pose relative_to="chassis">0.058219 0.083748 0.0 0 0 2.53</pose>
+    <link name="leg_fr_2xl_430">
+      <pose relative_to="chassis">0.058219 0.083748 0.0 0 0 2.530727</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -443,8 +443,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_c_coxa">
-      <pose relative_to="leg_c_2xl_430">0 -0.062 0 0 0 0</pose>
+    <link name="leg_fr_coxa">
+      <pose relative_to="leg_fr_2xl_430">0 -0.062 0 0 0 0</pose>
       <inertial>
         <mass>0.059976</mass>
         <inertia>
@@ -457,7 +457,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_c_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <pose relative_to="leg_fr_coxa">0.0 -0.144 0 0 0 1.57</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
@@ -480,8 +480,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_c_xl_430">
-      <pose relative_to="leg_c_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+    <link name="leg_fr_xl_430">
+      <pose relative_to="leg_fr_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -516,8 +516,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_c_femur">
-      <pose relative_to="leg_c_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+    <link name="leg_fr_femur">
+      <pose relative_to="leg_fr_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
       <inertial>
         <mass>0.028812</mass>
         <inertia>
@@ -530,7 +530,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_c_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <pose relative_to="leg_fr_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Femur_v41.stl</uri>
@@ -538,15 +538,15 @@
           </mesh>
         </geometry>
         <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
+          <ambient>1 1 0 1</ambient>
+          <diffuse>1 1 0 1</diffuse>
+          <specular>1 1 0 1</specular>
         </material>
         <transparency>0</transparency>
         <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
-        <pose relative_to="leg_c_femur">0 0 0.012 0 -0.96 0</pose>
+        <pose relative_to="leg_fr_femur">0 0 0.012 0 -0.96 0</pose>
         <geometry>
           <cylinder>
            <radius>0.005</radius>
@@ -555,8 +555,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_d_2xl_430">
-      <pose relative_to="chassis">-0.058219 -0.083748 0.0 0 0 -0.61</pose>
+    <link name="leg_bl_2xl_430">
+      <pose relative_to="chassis">-0.058219 -0.083748 0.0 0 0 -0.610865</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -591,8 +591,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_d_coxa">
-      <pose relative_to="leg_d_2xl_430">0 -0.062 0 0 0 0</pose>
+    <link name="leg_bl_coxa">
+      <pose relative_to="leg_bl_2xl_430">0 -0.062 0 0 0 0</pose>
       <inertial>
         <mass>0.059976</mass>
         <inertia>
@@ -605,7 +605,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_d_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <pose relative_to="leg_bl_coxa">0.0 -0.144 0 0 0 1.57</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
@@ -628,8 +628,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_d_xl_430">
-      <pose relative_to="leg_d_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+    <link name="leg_bl_xl_430">
+      <pose relative_to="leg_bl_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -664,8 +664,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_d_femur">
-      <pose relative_to="leg_d_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+    <link name="leg_bl_femur">
+      <pose relative_to="leg_bl_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
       <inertial>
         <mass>0.028812</mass>
         <inertia>
@@ -678,7 +678,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_d_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <pose relative_to="leg_bl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Femur_v41.stl</uri>
@@ -694,7 +694,7 @@
         <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
-        <pose relative_to="leg_d_femur">0 0 0.012 0 -0.96 0</pose>
+        <pose relative_to="leg_bl_femur">0 0 0.012 0 -0.96 0</pose>
         <geometry>
           <cylinder>
            <radius>0.005</radius>
@@ -703,8 +703,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_e_2xl_430">
-      <pose relative_to="chassis">-0.082 0 0.0 0 0 -1.57</pose>
+    <link name="leg_cl_2xl_430">
+      <pose relative_to="chassis">-0.082 0 0.0 0 0 -1.570796</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -739,8 +739,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_e_coxa">
-      <pose relative_to="leg_e_2xl_430">0 -0.062 0 0 0 0</pose>
+    <link name="leg_cl_coxa">
+      <pose relative_to="leg_cl_2xl_430">0 -0.062 0 0 0 0</pose>
       <inertial>
         <mass>0.059976</mass>
         <inertia>
@@ -753,7 +753,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_e_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <pose relative_to="leg_cl_coxa">0.0 -0.144 0 0 0 1.57</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
@@ -776,8 +776,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_e_xl_430">
-      <pose relative_to="leg_e_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+    <link name="leg_cl_xl_430">
+      <pose relative_to="leg_cl_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -812,8 +812,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_e_femur">
-      <pose relative_to="leg_e_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+    <link name="leg_cl_femur">
+      <pose relative_to="leg_cl_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
       <inertial>
         <mass>0.028812</mass>
         <inertia>
@@ -826,7 +826,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_e_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <pose relative_to="leg_cl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Femur_v41.stl</uri>
@@ -842,7 +842,7 @@
         <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
-        <pose relative_to="leg_e_femur">0 0 0.012 0 -0.96 0</pose>
+        <pose relative_to="leg_cl_femur">0 0 0.012 0 -0.96 0</pose>
         <geometry>
           <cylinder>
            <radius>0.005</radius>
@@ -851,8 +851,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_f_2xl_430">
-      <pose relative_to="chassis">-0.058219 0.083748 0.0 0 0 -2.53</pose>
+    <link name="leg_fl_2xl_430">
+      <pose relative_to="chassis">-0.058219 0.083748 0.0 0 0 -2.530727</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -887,8 +887,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_f_coxa">
-      <pose relative_to="leg_f_2xl_430">0 -0.062 0 0 0 0</pose>
+    <link name="leg_fl_coxa">
+      <pose relative_to="leg_fl_2xl_430">0 -0.062 0 0 0 0</pose>
       <inertial>
         <mass>0.059976</mass>
         <inertia>
@@ -901,7 +901,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_f_coxa">0.0 -0.144 0 0 0 1.57</pose>
+        <pose relative_to="leg_fl_coxa">0.0 -0.144 0 0 0 1.57</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Coxa_v37.stl</uri>
@@ -924,8 +924,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_f_xl_430">
-      <pose relative_to="leg_f_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
+    <link name="leg_fl_xl_430">
+      <pose relative_to="leg_fl_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
       <inertial>
         <mass>0.098</mass>
         <inertia>
@@ -960,8 +960,8 @@
         </geometry>
       </collision>
     </link>
-    <link name="leg_f_femur">
-      <pose relative_to="leg_f_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
+    <link name="leg_fl_femur">
+      <pose relative_to="leg_fl_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
       <inertial>
         <mass>0.028812</mass>
         <inertia>
@@ -974,7 +974,7 @@
         </inertia>
       </inertial>
       <visual name="visual">
-        <pose relative_to="leg_f_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
+        <pose relative_to="leg_fl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
         <geometry>
           <mesh>
             <uri>model://hexspider/meshes/Femur_v41.stl</uri>
@@ -982,15 +982,15 @@
           </mesh>
         </geometry>
         <material>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
+          <ambient>1 1 0 1</ambient>
+          <diffuse>1 1 0 1</diffuse>
+          <specular>1 1 0 1</specular>
         </material>
         <transparency>0</transparency>
         <cast_shadows>1</cast_shadows>
       </visual>
       <collision name="collision">
-        <pose relative_to="leg_f_femur">0 0 0.012 0 -0.96 0</pose>
+        <pose relative_to="leg_fl_femur">0 0 0.012 0 -0.96 0</pose>
         <geometry>
           <cylinder>
            <radius>0.005</radius>
@@ -999,10 +999,10 @@
         </geometry>
       </collision>
     </link>
-    <joint name="leg_a_servo_1" type="revolute">
-      <pose relative_to="leg_a_2xl_430">0 0.012 0.000 0 0 0</pose>
+    <joint name="leg_br_servo_1" type="revolute">
+      <pose relative_to="leg_br_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
-      <child>leg_a_2xl_430</child>
+      <child>leg_br_2xl_430</child>
       <axis>
         <xyz expressed_in="__model__">0 0 1</xyz>
         <limit>
@@ -1013,54 +1013,45 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_a_servo_2" type="revolute">
-      <pose relative_to="leg_a_2xl_430">0 -0.012 0.000 0 0 0</pose>
-      <parent>leg_a_2xl_430</parent>
-      <child>leg_a_coxa</child>
+    <joint name="leg_br_servo_2" type="revolute">
+      <pose relative_to="leg_br_2xl_430">0 -0.012 0.000 0 0 0</pose>
+      <parent>leg_br_2xl_430</parent>
+      <child>leg_br_coxa</child>
       <axis>
-        <xyz expressed_in="leg_a_2xl_430">1 0 0</xyz>
+        <xyz expressed_in="leg_br_2xl_430">1 0 0</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
           <lower>-1.570796</lower>
           <upper>1.570796</upper>
         </limit>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
       </axis>
     </joint>
-    <joint name="leg_a_servo_3" type="revolute">
-      <pose relative_to="leg_a_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_a_coxa</parent>
-      <child>leg_a_xl_430</child>
+    <joint name="leg_br_servo_3" type="revolute">
+      <pose relative_to="leg_br_xl_430">0 0.0 0.000 0 0 0</pose>
+      <parent>leg_br_coxa</parent>
+      <child>leg_br_xl_430</child>
       <axis>
-        <xyz expressed_in="leg_a_xl_430">0 0 1</xyz>
+        <xyz expressed_in="leg_br_xl_430">0 0 1</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
-          <lower>-1.570796</lower>
-          <upper>1.570796</upper>
+          <lower>-2.570796</lower>
+          <upper>2.570796</upper>
         </limit>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
       </axis>
     </joint>
-    <joint name="leg_a_femur_joint" type="fixed">
-      <pose relative_to="leg_a_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_a_xl_430</parent>
-      <child>leg_a_femur</child>
+    <joint name="leg_br_femur_joint" type="fixed">
+      <pose relative_to="leg_br_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_br_xl_430</parent>
+      <child>leg_br_femur</child>
     </joint>
-    <joint name="leg_b_servo_1" type="revolute">
-      <pose relative_to="leg_b_2xl_430">0 0.012 0.000 0 0 0</pose>
+    <joint name="leg_cr_servo_1" type="revolute">
+      <pose relative_to="leg_cr_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
-      <child>leg_b_2xl_430</child>
+      <child>leg_cr_2xl_430</child>
       <axis>
         <xyz expressed_in="__model__">0 0 1</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1069,15 +1060,12 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_b_servo_2" type="revolute">
-      <pose relative_to="leg_b_2xl_430">0 -0.012 0.000 0 0 0</pose>
-      <parent>leg_b_2xl_430</parent>
-      <child>leg_b_coxa</child>
+    <joint name="leg_cr_servo_2" type="revolute">
+      <pose relative_to="leg_cr_2xl_430">0 -0.012 0.000 0 0 0</pose>
+      <parent>leg_cr_2xl_430</parent>
+      <child>leg_cr_coxa</child>
       <axis>
-        <xyz expressed_in="leg_b_2xl_430">1 0 0</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_cr_2xl_430">1 0 0</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1086,37 +1074,31 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_b_servo_3" type="revolute">
-      <pose relative_to="leg_b_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_b_coxa</parent>
-      <child>leg_b_xl_430</child>
+    <joint name="leg_cr_servo_3" type="revolute">
+      <pose relative_to="leg_cr_xl_430">0 0.0 0.000 0 0 0</pose>
+      <parent>leg_cr_coxa</parent>
+      <child>leg_cr_xl_430</child>
       <axis>
-        <xyz expressed_in="leg_b_xl_430">0 0 1</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_cr_xl_430">0 0 1</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
-          <lower>-1.570796</lower>
-          <upper>1.570796</upper>
+          <lower>-2.570796</lower>
+          <upper>2.570796</upper>
         </limit>
       </axis>
     </joint>
-    <joint name="leg_b_femur_joint" type="fixed">
-      <pose relative_to="leg_b_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_b_xl_430</parent>
-      <child>leg_b_femur</child>
+    <joint name="leg_cr_femur_joint" type="fixed">
+      <pose relative_to="leg_cr_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_cr_xl_430</parent>
+      <child>leg_cr_femur</child>
     </joint>
-    <joint name="leg_c_servo_1" type="revolute">
-      <pose relative_to="leg_c_2xl_430">0 0.012 0.000 0 0 0</pose>
+    <joint name="leg_fr_servo_1" type="revolute">
+      <pose relative_to="leg_fr_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
-      <child>leg_c_2xl_430</child>
+      <child>leg_fr_2xl_430</child>
       <axis>
         <xyz expressed_in="__model__">0 0 1</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1125,15 +1107,12 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_c_servo_2" type="revolute">
-      <pose relative_to="leg_c_2xl_430">0 -0.012 0.000 0 0 0</pose>
-      <parent>leg_c_2xl_430</parent>
-      <child>leg_c_coxa</child>
+    <joint name="leg_fr_servo_2" type="revolute">
+      <pose relative_to="leg_fr_2xl_430">0 -0.012 0.000 0 0 0</pose>
+      <parent>leg_fr_2xl_430</parent>
+      <child>leg_fr_coxa</child>
       <axis>
-        <xyz expressed_in="leg_c_2xl_430">1 0 0</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_fr_2xl_430">1 0 0</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1142,37 +1121,31 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_c_servo_3" type="revolute">
-      <pose relative_to="leg_c_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_c_coxa</parent>
-      <child>leg_c_xl_430</child>
+    <joint name="leg_fr_servo_3" type="revolute">
+      <pose relative_to="leg_fr_xl_430">0 0.0 0.000 0 0 0</pose>
+      <parent>leg_fr_coxa</parent>
+      <child>leg_fr_xl_430</child>
       <axis>
-        <xyz expressed_in="leg_c_xl_430">0 0 1</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_fr_xl_430">0 0 1</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
-          <lower>-1.570796</lower>
-          <upper>1.570796</upper>
+          <lower>-2.570796</lower>
+          <upper>2.570796</upper>
         </limit>
       </axis>
     </joint>
-    <joint name="leg_c_femur_joint" type="fixed">
-      <pose relative_to="leg_c_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_c_xl_430</parent>
-      <child>leg_c_femur</child>
+    <joint name="leg_fr_femur_joint" type="fixed">
+      <pose relative_to="leg_fr_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_fr_xl_430</parent>
+      <child>leg_fr_femur</child>
     </joint>
-    <joint name="leg_d_servo_1" type="revolute">
-      <pose relative_to="leg_d_2xl_430">0 0.012 0.000 0 0 0</pose>
+    <joint name="leg_bl_servo_1" type="revolute">
+      <pose relative_to="leg_bl_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
-      <child>leg_d_2xl_430</child>
+      <child>leg_bl_2xl_430</child>
       <axis>
         <xyz expressed_in="__model__">0 0 1</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1181,15 +1154,12 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_d_servo_2" type="revolute">
-      <pose relative_to="leg_d_2xl_430">0 -0.012 0.000 0 0 0</pose>
-      <parent>leg_d_2xl_430</parent>
-      <child>leg_d_coxa</child>
+    <joint name="leg_bl_servo_2" type="revolute">
+      <pose relative_to="leg_bl_2xl_430">0 -0.012 0.000 0 0 0</pose>
+      <parent>leg_bl_2xl_430</parent>
+      <child>leg_bl_coxa</child>
       <axis>
-        <xyz expressed_in="leg_d_2xl_430">1 0 0</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_bl_2xl_430">1 0 0</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1198,37 +1168,31 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_d_servo_3" type="revolute">
-      <pose relative_to="leg_d_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_d_coxa</parent>
-      <child>leg_d_xl_430</child>
+    <joint name="leg_bl_servo_3" type="revolute">
+      <pose relative_to="leg_bl_xl_430">0 0.0 0.000 0 0 0</pose>
+      <parent>leg_bl_coxa</parent>
+      <child>leg_bl_xl_430</child>
       <axis>
-        <xyz expressed_in="leg_d_xl_430">0 0 1</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_bl_xl_430">0 0 1</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
-          <lower>-1.570796</lower>
-          <upper>1.570796</upper>
+          <lower>-2.570796</lower>
+          <upper>2.570796</upper>
         </limit>
       </axis>
     </joint>
-    <joint name="leg_d_femur_joint" type="fixed">
-      <pose relative_to="leg_d_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_d_xl_430</parent>
-      <child>leg_d_femur</child>
+    <joint name="leg_bl_femur_joint" type="fixed">
+      <pose relative_to="leg_bl_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_bl_xl_430</parent>
+      <child>leg_bl_femur</child>
     </joint>
-    <joint name="leg_e_servo_1" type="revolute">
-      <pose relative_to="leg_e_2xl_430">0 0.012 0.000 0 0 0</pose>
+    <joint name="leg_cl_servo_1" type="revolute">
+      <pose relative_to="leg_cl_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
-      <child>leg_e_2xl_430</child>
+      <child>leg_cl_2xl_430</child>
       <axis>
         <xyz expressed_in="__model__">0 0 1</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1237,15 +1201,12 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_e_servo_2" type="revolute">
-      <pose relative_to="leg_e_2xl_430">0 -0.012 0.000 0 0 0</pose>
-      <parent>leg_e_2xl_430</parent>
-      <child>leg_e_coxa</child>
+    <joint name="leg_cl_servo_2" type="revolute">
+      <pose relative_to="leg_cl_2xl_430">0 -0.012 0.000 0 0 0</pose>
+      <parent>leg_cl_2xl_430</parent>
+      <child>leg_cl_coxa</child>
       <axis>
-        <xyz expressed_in="leg_e_2xl_430">1 0 0</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_cl_2xl_430">1 0 0</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1254,37 +1215,31 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_e_servo_3" type="revolute">
-      <pose relative_to="leg_e_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_e_coxa</parent>
-      <child>leg_e_xl_430</child>
+    <joint name="leg_cl_servo_3" type="revolute">
+      <pose relative_to="leg_cl_xl_430">0 0.0 0.000 0 0 0</pose>
+      <parent>leg_cl_coxa</parent>
+      <child>leg_cl_xl_430</child>
       <axis>
-        <xyz expressed_in="leg_e_xl_430">0 0 1</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_cl_xl_430">0 0 1</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
-          <lower>-1.570796</lower>
-          <upper>1.570796</upper>
+          <lower>-2.570796</lower>
+          <upper>2.570796</upper>
         </limit>
       </axis>
     </joint>
-    <joint name="leg_e_femur_joint" type="fixed">
-      <pose relative_to="leg_e_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_e_xl_430</parent>
-      <child>leg_e_femur</child>
+    <joint name="leg_cl_femur_joint" type="fixed">
+      <pose relative_to="leg_cl_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_cl_xl_430</parent>
+      <child>leg_cl_femur</child>
     </joint>
-    <joint name="leg_f_servo_1" type="revolute">
-      <pose relative_to="leg_f_2xl_430">0 0.012 0.000 0 0 0</pose>
+    <joint name="leg_fl_servo_1" type="revolute">
+      <pose relative_to="leg_fl_2xl_430">0 0.012 0.000 0 0 0</pose>
       <parent>chassis</parent>
-      <child>leg_f_2xl_430</child>
+      <child>leg_fl_2xl_430</child>
       <axis>
         <xyz expressed_in="__model__">0 0 1</xyz>
-        <dynamics>
-          <damping>0.5</damping>
-        </dynamics>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1293,15 +1248,12 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_f_servo_2" type="revolute">
-      <pose relative_to="leg_f_2xl_430">0 -0.012 0.000 0 0 0</pose>
-      <parent>leg_f_2xl_430</parent>
-      <child>leg_f_coxa</child>
+    <joint name="leg_fl_servo_2" type="revolute">
+      <pose relative_to="leg_fl_2xl_430">0 -0.012 0.000 0 0 0</pose>
+      <parent>leg_fl_2xl_430</parent>
+      <child>leg_fl_coxa</child>
       <axis>
-        <xyz expressed_in="leg_f_2xl_430">1 0 0</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_fl_2xl_430">1 0 0</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
@@ -1310,27 +1262,24 @@
         </limit>
       </axis>
     </joint>
-    <joint name="leg_f_servo_3" type="revolute">
-      <pose relative_to="leg_f_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_f_coxa</parent>
-      <child>leg_f_xl_430</child>
+    <joint name="leg_fl_servo_3" type="revolute">
+      <pose relative_to="leg_fl_xl_430">0 0.0 0.000 0 0 0</pose>
+      <parent>leg_fl_coxa</parent>
+      <child>leg_fl_xl_430</child>
       <axis>
-        <xyz expressed_in="leg_f_xl_430">0 0 1</xyz>
-        <dynamics>
-          <damping>0</damping>
-        </dynamics>
+        <xyz expressed_in="leg_fl_xl_430">0 0 1</xyz>
         <limit>
           <effort>362</effort>
           <velocity>6</velocity>
-          <lower>-1.570796</lower>
-          <upper>1.570796</upper>
+          <lower>-2.570796</lower>
+          <upper>2.570796</upper>
         </limit>
       </axis>
     </joint>
-    <joint name="leg_f_femur_joint" type="fixed">
-      <pose relative_to="leg_f_xl_430">0 0.012 0.000 0 0 0</pose>
-      <parent>leg_f_xl_430</parent>
-      <child>leg_f_femur</child>
+    <joint name="leg_fl_femur_joint" type="fixed">
+      <pose relative_to="leg_fl_xl_430">0 0.012 0.000 0 0 0</pose>
+      <parent>leg_fl_xl_430</parent>
+      <child>leg_fl_femur</child>
     </joint>
   </model>
 </sdf>
