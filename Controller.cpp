@@ -6,6 +6,7 @@
 
 #include "inverse_kinematics.h"
 #include "forward_kinematics.h"
+#include "matrix_3d.h"
 
 #include <utility>
 #include <conversion_2d.h>
@@ -42,12 +43,12 @@ int Controller::init() {
         convert_2d_polar_to_cartesian(leg.polar_joint_offset, leg_coordinates);
 
         // Configure te coxa pose in the body frame
-        pose_set(&_state[i].body_position, leg_coordinates[0], leg_coordinates[1], 0, 0, 0, leg.polar_joint_offset[1]);
-        std::cout << "\t" << "Coxa position at (" << leg_coordinates[0] << "," << leg_coordinates[1] << ")"
+        pose_set(&_state[i].coxa_joint_in_body_frame, leg_coordinates[0], leg_coordinates[1], 0, 0, 0, leg.polar_joint_offset[1]);
+        std::cout << "\t" << "Coxa (body) at (" << leg_coordinates[0] << "," << leg_coordinates[1] << ")"
                   << std::endl;
 
         MATRIX4(Tcoxa);
-        pose_get_transformation(&_state[i].body_position, &Tcoxa);
+        pose_get_transformation(&_state[i].coxa_joint_in_body_frame, &Tcoxa);
 
         MATRIX4(T);
         arm_mat_mult_f32(&T1, &Tcoxa, &T);
@@ -62,14 +63,33 @@ int Controller::init() {
         leg.tip_starting_position[2] = vec[2];
 
         // Tip position in world frame
-        pose_set(&_state[i].tip_position, leg.tip_starting_position[0], leg.tip_starting_position[1],
+        pose_set(&_state[i].tip_position_in_world_frame, leg.tip_starting_position[0], leg.tip_starting_position[1],
                  leg.tip_starting_position[2], 0, 0, 0);
 
         for (int i = 0; i < 3; i++) {
             _state[i].joint_angles[i] = leg.tip_starting_angles[i];
         }
-        std::cout << "\t" << "Tip position at (" << _state[i].tip_position.translation[0] << ","
-                  << _state[i].tip_position.translation[1] << ")" << std::endl;
+
+        MATRIX4(Ti);
+        matrix_3d_invert(&Thexapod, &Ti);
+        matrix_3d_vec_transform(&Ti,
+                                _state[i].tip_position_in_world_frame.translation,
+                                _state[i].tip_position_in_body_frame.translation);
+
+        leg.tip_starting_position[0] = _state[i].tip_position_in_body_frame.translation[0];
+        leg.tip_starting_position[1] = _state[i].tip_position_in_body_frame.translation[1];
+        leg.tip_starting_position[2] = _state[i].tip_position_in_body_frame.translation[2];
+
+        std::cout << "\t" << "Tip (world) at ("
+                << _state[i].tip_position_in_world_frame.translation[0] << ","
+                << _state[i].tip_position_in_world_frame.translation[1] << ","
+                << _state[i].tip_position_in_world_frame.translation[2] << ")"
+                << std::endl;
+        std::cout << "\t" << "Tip (body) at ("
+                << _state[i].tip_position_in_body_frame.translation[0] << ","
+                << _state[i].tip_position_in_body_frame.translation[1] << ","
+                << _state[i].tip_position_in_body_frame.translation[2] << ")"
+                << std::endl;
 
         // Setup the topics
         char buf[100];
@@ -124,15 +144,15 @@ int Controller::run() {
         return 0;
     }
 
-    pose_set(&_hexapod, 0, 0, 100, 0, 0, 0);
+    pose_set(&_hexapod, 0, 0, 150, 0, 0, 0);
     pose_set(&_body, 0, 0, 0, 0, 0, 0);
 
     uint64_t t = 0;
-    float32_t velocity = 100; // mm/s
+    float32_t velocity = 50; // mm/s
     float32_t heading = 0;
 
     Gait gait_controller{};
-    gait_controller.init(velocity, heading);
+    gait_controller.init();
 
     while (!terminate) {
         // Wait for a sync pulse from gazebo on the clock topic
@@ -160,6 +180,10 @@ int Controller::run() {
         _hexapod.translation[0] += stepsize * cos(heading);
         _hexapod.translation[1] += stepsize * sin(heading);
 
+        float32_t motion_vector[3] = { velocity * cos(heading), velocity * sin(heading), 0};
+        float32_t movement_vector[3];
+        arm_vec_mult_scalar_f32(motion_vector, (float32_t)delta_t / 1000000, movement_vector, 3);
+
         MATRIX4(Thexapod);
         MATRIX4(Tbody);
 
@@ -169,33 +193,76 @@ int Controller::run() {
         MATRIX4(T1);
         arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
 
-        gait_controller.update(_robot, delta_t);
+        // For grounded legs the position of the tip in the world frame
+        // doesn't change. Calculate the new angles using that location
+        // and the new reference frame for the hexapod.
+        // For legs that are lifting the calculated position is with
+        // respect to the body frame. Calculate the new position using the
+        // gait controller, recalculate the world position and update the angles
+        // accordingly
+        for (int i=0; i<6; i++) {
+            float32_t *current_tip_in_world = _state[i].tip_position_in_world_frame.translation;
 
-        int i = 0;
-        for (const Leg &leg: _robot.leg) {
+            if (false) {
+                std::cout << "Leg " << i << " tip (world): (" << current_tip_in_world[0] << ","
+                          << current_tip_in_world[1] << ","
+                          << current_tip_in_world[2] << ")" << std::endl;
+                std::cout << "leg " << i << " tip (body): ("
+                          << _state[i].tip_position_in_body_frame.translation[0] << "," << _state[i].tip_position_in_body_frame.translation[1]
+                          << "," << _state[i].tip_position_in_body_frame.translation[2] << ")" << std::endl;
+
+            }
+
+        }
+
+        // Calculate the targets for the current cycle
+        gait_controller.calculate(_robot, _state, movement_vector, delta_t);
+
+        // Calculate the servo angles and publish
+        for (int i=0; i<6; i++) {
             MATRIX4(Tcoxa);
-            pose_get_transformation(&_state[i].body_position, &Tcoxa);
+            pose_get_transformation(&_state[i].coxa_joint_in_body_frame, &Tcoxa);
 
             MATRIX4(T);
             arm_mat_mult_f32(&T1, &Tcoxa, &T);
 
             MATRIX4(Ti);
-            arm_mat_inverse_f32(&T, &Ti);
+            matrix_3d_invert(&T, &Ti);
 
-            _state[i].tip_position.translation[0] += gait_controller.delta_tip[i][0];
-            _state[i].tip_position.translation[1] += gait_controller.delta_tip[i][1];
-            _state[i].tip_position.translation[2] = gait_controller.delta_tip[i][2];
+            MATRIX4(Thexapod_to_body);
+            matrix_3d_invert(&Thexapod, &Thexapod_to_body);
 
-            float32_t tip_in_world[4] = {_state[i].tip_position.translation[0], _state[i].tip_position.translation[1],
-                                         _state[i].tip_position.translation[2], 1};
+            float32_t *tip_in_world = _state[i].tip_position_in_world_frame.translation;
+            float32_t *tip_in_body = _state[i].tip_position_in_body_frame.translation;
 
-            float32_t tip_in_coxa[4];
-            arm_mat_vec_mult_f32(&Ti, tip_in_world, tip_in_coxa);
+            if (!_state[i].grounded) {
+                // We have a new position in the body frame, calculate the posistion in the
+                // updated world frame
+                matrix_3d_vec_transform(&Thexapod, _state[i].tip_interpolated_target, tip_in_world);
+                arm_vec_copy_f32(_state[i].tip_interpolated_target, _state[i].tip_position_in_body_frame.translation, 3);
+                if (false) {
+                    std::cout << "New leg " << i << " interpolated target (body): ("
+                              << _state[i].tip_interpolated_target[0] << "," << _state[i].tip_interpolated_target[1]
+                              << "," << _state[i].tip_interpolated_target[2] << ")" << std::endl;
+                    std::cout << "New leg " << i << " target (body): (" << _state[i].tip_target[0] << ","
+                              << _state[i].tip_target[1] << "," << _state[i].tip_target[2] << ")" << std::endl;
+                }
+            } else {
+                // Recalculate the tip position in body frame
+                matrix_3d_vec_transform(&Thexapod_to_body, tip_in_world, tip_in_body);
+            }
+
+            if (false) {
+                std::cout << "New leg " << i << " tip (world): (" << tip_in_world[0] << "," << tip_in_world[1] << ","
+                          << tip_in_world[2] << ")" << std::endl;
+            }
+
+            float32_t tip_in_coxa[3];
+            matrix_3d_vec_transform(&Ti, tip_in_world, tip_in_coxa);
 
             float32_t origin[3] = {0, 0, 0};
-            float32_t target[3] = {tip_in_coxa[0], tip_in_coxa[1], tip_in_coxa[2]};
             float32_t angles[3];
-            inverse_kinematics(origin, target, angles);
+            inverse_kinematics(origin, tip_in_coxa, angles);
 
             _state[i].joint_angles[0] = angles[0];
             _state[i].joint_angles[1] = angles[1];
@@ -211,8 +278,10 @@ int Controller::run() {
 
                 _state[i].servo_publishers[j].Publish(msg);
             }
-            i++;
         }
+
+        // Process any updates needed for the next cycle
+        gait_controller.update(_robot, _state, motion_vector, delta_t);
         t++;
     }
 
@@ -232,7 +301,7 @@ int Controller::run() {
         return 0;
     }
 
-    std::this_thread::sleep_for(5000ms);
+    std::this_thread::sleep_for(2000ms);
 
     if (!this->removeModel()) {
         std::cerr << "Unable to remove the model" << std::endl;

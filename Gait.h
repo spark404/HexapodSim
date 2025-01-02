@@ -9,16 +9,14 @@
 
 class Gait {
 public:
-    void init(float32_t velocity, float32_t heading);
-    void update(const Robot &robot, uint64_t delta_t);
+    void init();
+    void calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3], uint64_t delta_t);
+    void update(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3], uint64_t delta_t);
     float32_t delta_tip[6][3];
 private:
-    int _state;
-    float32_t _velocity;
-    float32_t _angular_velocity;
-    int _steps_in_cycle;
-    int _current_step;
-
+    float32_t _step_size = 40.0f; // mm
+    float32_t _lift_height = 25.0f; // mm
+    float32_t _lift_incline_factor = 2.0f;
 };
 
 

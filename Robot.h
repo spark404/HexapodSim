@@ -48,11 +48,14 @@ const Robot r {{{
 }}};
 
 struct LegState {
-    struct pose body_position{};
-    struct pose tip_position{};
+    struct pose coxa_joint_in_body_frame{};
+    struct pose tip_position_in_world_frame{};
+    struct pose tip_position_in_body_frame{};
+    float32_t tip_target[3]{};
+    float32_t tip_interpolated_target[3]{};
     float32_t joint_angles[3]{}; // 0 = coxa, 1 = femur, 2 = tibia
     float32_t actual_joint_angles[3]{}; // 0 = coxa, 1 = femur, 2 = tibia
     float32_t prev_joint_angles[3]{}; // 0 = coxa, 1 = femur, 2 = tibia
-    bool grounded = false;
+    bool grounded = true;
     std::array<gz::transport::Node::Publisher, 3> servo_publishers;
 };
