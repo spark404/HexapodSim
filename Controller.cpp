@@ -66,8 +66,8 @@ int Controller::init() {
         pose_set(&_state[i].tip_position_in_world_frame, leg.tip_starting_position[0], leg.tip_starting_position[1],
                  leg.tip_starting_position[2], 0, 0, 0);
 
-        for (int i = 0; i < 3; i++) {
-            _state[i].joint_angles[i] = leg.tip_starting_angles[i];
+        for (int j = 0; j < 3; j++) {
+            _state[i].joint_angles[j] = leg.tip_starting_angles[j];
         }
 
         MATRIX4(Ti);
@@ -145,9 +145,8 @@ int Controller::run() {
     }
 
     pose_set(&_hexapod, 0, 0, 150, 0, 0, 0);
-    pose_set(&_body, 0, 0, 0, 0, 0, 0);
+    pose_set(&_body, 0, 0, -50, 0, 0, 0);
 
-    uint64_t t = 0;
     float32_t velocity = 50; // mm/s
     float32_t heading = 0;
 
@@ -170,13 +169,11 @@ int Controller::run() {
         uint64_t delta_t = _time_us - last_time_us;
         last_time_us = _time_us;
 
-        // std::cout << "Delta " << delta_t << std::endl;
-
         if (delta_t > 10000) {
             continue;
         }
 
-        float32_t stepsize = velocity * delta_t / 1000000;
+        float32_t stepsize = velocity * (float32_t)delta_t / 1000000;
         _hexapod.translation[0] += stepsize * cos(heading);
         _hexapod.translation[1] += stepsize * sin(heading);
 
@@ -192,28 +189,6 @@ int Controller::run() {
 
         MATRIX4(T1);
         arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
-
-        // For grounded legs the position of the tip in the world frame
-        // doesn't change. Calculate the new angles using that location
-        // and the new reference frame for the hexapod.
-        // For legs that are lifting the calculated position is with
-        // respect to the body frame. Calculate the new position using the
-        // gait controller, recalculate the world position and update the angles
-        // accordingly
-        for (int i=0; i<6; i++) {
-            float32_t *current_tip_in_world = _state[i].tip_position_in_world_frame.translation;
-
-            if (false) {
-                std::cout << "Leg " << i << " tip (world): (" << current_tip_in_world[0] << ","
-                          << current_tip_in_world[1] << ","
-                          << current_tip_in_world[2] << ")" << std::endl;
-                std::cout << "leg " << i << " tip (body): ("
-                          << _state[i].tip_position_in_body_frame.translation[0] << "," << _state[i].tip_position_in_body_frame.translation[1]
-                          << "," << _state[i].tip_position_in_body_frame.translation[2] << ")" << std::endl;
-
-            }
-
-        }
 
         // Calculate the targets for the current cycle
         gait_controller.calculate(_robot, _state, movement_vector, delta_t);
@@ -240,21 +215,9 @@ int Controller::run() {
                 // updated world frame
                 matrix_3d_vec_transform(&Thexapod, _state[i].tip_interpolated_target, tip_in_world);
                 arm_vec_copy_f32(_state[i].tip_interpolated_target, _state[i].tip_position_in_body_frame.translation, 3);
-                if (false) {
-                    std::cout << "New leg " << i << " interpolated target (body): ("
-                              << _state[i].tip_interpolated_target[0] << "," << _state[i].tip_interpolated_target[1]
-                              << "," << _state[i].tip_interpolated_target[2] << ")" << std::endl;
-                    std::cout << "New leg " << i << " target (body): (" << _state[i].tip_target[0] << ","
-                              << _state[i].tip_target[1] << "," << _state[i].tip_target[2] << ")" << std::endl;
-                }
             } else {
                 // Recalculate the tip position in body frame
                 matrix_3d_vec_transform(&Thexapod_to_body, tip_in_world, tip_in_body);
-            }
-
-            if (false) {
-                std::cout << "New leg " << i << " tip (world): (" << tip_in_world[0] << "," << tip_in_world[1] << ","
-                          << tip_in_world[2] << ")" << std::endl;
             }
 
             float32_t tip_in_coxa[3];
@@ -282,7 +245,6 @@ int Controller::run() {
 
         // Process any updates needed for the next cycle
         gait_controller.update(_robot, _state, motion_vector, delta_t);
-        t++;
     }
 
     std::cout << "Terminating the Controller" << std::endl;
@@ -329,8 +291,9 @@ void Controller::clockCallback(const gz::msgs::Clock &clock) {
 
 void Controller::jointStateCallback(const gz::msgs::Model &model) {
     for (int i = 0; i < model.joint_size(); i++) {
-        auto joint = model.joint(i);
-        auto str = joint.name();
+        const auto& joint = model.joint(i);
+        const auto& str = joint.name();
+
         if (str.find("servo") != std::string::npos) {
             std::string leg = str.substr(4, 2);
             int leg_index = getStringCode(leg);
@@ -444,26 +407,3 @@ int getStringCode(const std::string &input) {
         return -1; // Return -1 if the input string is not valid
     }
 }
-
-
-/**
-*  @brief Motion controller takes the rc inputs an determines where the new body should be after at a specific
- *  time in the future. It does this by determining the velocity and rotation speeds. The result is a new
- *  pose for the hexapod, which can be used in subsequent steps
- *
- *  @param rc_inputs float32_t[3] [in]
-*/
-void motion_controller(float32_t rc_inputs[3]) {
-
-}
-
-/**
- * @brief gait controller determines the target postions of the legs, combining the
- * body target and the type of gait selected.
- *
- * It should maintain state about the position of the leg tips.
- *
- * @param
- */
-
-

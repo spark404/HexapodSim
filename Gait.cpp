@@ -74,13 +74,6 @@ void Gait::calculate(const Robot &robot, std::array<LegState, 6> &state, const f
         calculate_path(p_current, target, _lift_height, _lift_incline_factor, paths[i]);
 
         arm_vec_copy_f32(target, state[i].tip_target, 3);
-
-        if (false) {
-            for (int k = 0; k < 4; k++) {
-                std::cout << "Leg" << i << " path " << k << "(" << paths[i][k][0] << "," << paths[i][k][1] << "," << paths[i][k][2]
-                          << ")" << std::endl;
-            }
-        }
     }
 
     float32_t longest_path = 0.f;
@@ -124,6 +117,7 @@ void Gait::calculate(const Robot &robot, std::array<LegState, 6> &state, const f
 
 /// Calculate the target for this section. The target on the XY plane is calculated using the direction
 /// vector and the magnitude. The section Z target is set with the target_height parameter.
+///
 /// \param direction Direction vector, only the XY components will be used
 /// \param magnitude Movement magnitude on the XY plane
 /// \param lift_incline_factor Factor to set the inline vs travel distance
@@ -137,6 +131,7 @@ void calculate_section(float32_t direction[3], float32_t magnitude, float32_t li
 }
 
 /// Calculate a path between the current and target position that lifts and lowers the leg.
+///
 /// \param current Current position
 /// \param target Target position
 /// \param lift_height Leg lift height
