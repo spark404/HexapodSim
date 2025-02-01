@@ -13,6 +13,7 @@ find_package(gz-transport NAMES gz-transport14)
 add_executable(Controller main.cpp
         Controller.cpp
         Gait.cpp
+        Standup.cpp
 )
 target_link_libraries(Controller PRIVATE
         gz-transport14::core

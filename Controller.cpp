@@ -12,6 +12,7 @@
 #include <conversion_2d.h>
 
 #include "Gait.h"
+#include "Standup.h"
 
 int getStringCode(const std::string &input);
 
@@ -42,7 +43,7 @@ int Controller::init() {
         float32_t leg_coordinates[2];
         convert_2d_polar_to_cartesian(leg.polar_joint_offset, leg_coordinates);
 
-        // Configure te coxa pose in the body frame
+        // Configure the coxa pose in the body frame
         pose_set(&_state[i].coxa_joint_in_body_frame, leg_coordinates[0], leg_coordinates[1], 0, 0, 0, leg.polar_joint_offset[1]);
         std::cout << "\t" << "Coxa (body) at (" << leg_coordinates[0] << "," << leg_coordinates[1] << ")"
                   << std::endl;
@@ -53,14 +54,9 @@ int Controller::init() {
         MATRIX4(T);
         arm_mat_mult_f32(&T1, &Tcoxa, &T);
 
-        float32_t pos[4];
+        float32_t pos[3];
         forward_kinematics((float32_t *) leg.tip_starting_angles, pos);
-        pos[3] = 1;
-        float32_t vec[4];
-        arm_mat_vec_mult_f32(&T, pos, vec);
-        leg.tip_starting_position[0] = vec[0];
-        leg.tip_starting_position[1] = vec[1];
-        leg.tip_starting_position[2] = vec[2];
+        matrix_3d_vec_transform(&T, pos, leg.tip_starting_position);
 
         // Tip position in world frame
         pose_set(&_state[i].tip_position_in_world_frame, leg.tip_starting_position[0], leg.tip_starting_position[1],
@@ -109,16 +105,6 @@ int Controller::init() {
         i++;
     }
 
-    if (!createModel()) {
-        std::cerr << "Model setup failed" << std::endl;
-        return 0;
-    }
-
-    if (!pauze(false)) {
-        std::cerr << "Unable to start the simulation" << std::endl;
-        return 0;
-    }
-
     _time_us = 0;
 
     return 1;
@@ -147,19 +133,22 @@ int Controller::run() {
     pose_set(&_hexapod, 0, 0, 150, 0, 0, 0);
     pose_set(&_body, 0, 0, -50, 0, 0, 0);
 
-    float32_t velocity = 50; // mm/s
+    float32_t velocity = 0; // mm/s
     float32_t heading = 0;
 
     Gait gait_controller{};
     gait_controller.init();
+
+    Standup standup_controller{};
+    standup_controller.init();
 
     while (!terminate) {
         // Wait for a sync pulse from gazebo on the clock topic
         auto status = _tick.wait_for(lk, std::chrono::seconds(2));
 
         if (status == std::cv_status::timeout) {
-            terminate = true;
-            break;
+            terminate = false;
+            continue;
         }
 
         if (terminate) {
@@ -171,6 +160,20 @@ int Controller::run() {
 
         if (delta_t > 10000) {
             continue;
+        }
+
+        if (_motion_state == INITIALIZING) {
+            if (_state[0].actual_joint_angles[0] == 0.0f &&
+            _state[0].actual_joint_angles[1] == 0.0f &&
+            _state[0].actual_joint_angles[2] == 0.0f) {
+                // no joint state update yet
+                continue;
+            } else {
+                for (int i=0; i<6; i++) {
+                    arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].prev_joint_angles, 3);
+                }
+                _motion_state = STANDING;
+            }
         }
 
         float32_t stepsize = velocity * (float32_t)delta_t / 1000000;
@@ -191,60 +194,71 @@ int Controller::run() {
         arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
 
         // Calculate the targets for the current cycle
-        gait_controller.calculate(_robot, _state, movement_vector, delta_t);
+        if (_motion_state == STANDING) {
+            standup_controller.calculate(_robot, _state, movement_vector);
+        }
+        else {
+            gait_controller.calculate(_robot, _state, movement_vector);
 
-        // Calculate the servo angles and publish
-        for (int i=0; i<6; i++) {
-            MATRIX4(Tcoxa);
-            pose_get_transformation(&_state[i].coxa_joint_in_body_frame, &Tcoxa);
+            // Calculate the servo angles and publish
+            for (int i = 0; i < 6; i++) {
+                MATRIX4(Tcoxa);
+                pose_get_transformation(&_state[i].coxa_joint_in_body_frame, &Tcoxa);
 
-            MATRIX4(T);
-            arm_mat_mult_f32(&T1, &Tcoxa, &T);
+                MATRIX4(T);
+                arm_mat_mult_f32(&T1, &Tcoxa, &T);
 
-            MATRIX4(Ti);
-            matrix_3d_invert(&T, &Ti);
+                MATRIX4(Ti);
+                matrix_3d_invert(&T, &Ti);
 
-            MATRIX4(Thexapod_to_body);
-            matrix_3d_invert(&Thexapod, &Thexapod_to_body);
+                MATRIX4(Thexapod_to_body);
+                matrix_3d_invert(&Thexapod, &Thexapod_to_body);
 
-            float32_t *tip_in_world = _state[i].tip_position_in_world_frame.translation;
-            float32_t *tip_in_body = _state[i].tip_position_in_body_frame.translation;
+                float32_t *tip_in_world = _state[i].tip_position_in_world_frame.translation;
+                float32_t *tip_in_body = _state[i].tip_position_in_body_frame.translation;
 
-            if (!_state[i].grounded) {
-                // We have a new position in the body frame, calculate the posistion in the
-                // updated world frame
-                matrix_3d_vec_transform(&Thexapod, _state[i].tip_interpolated_target, tip_in_world);
-                arm_vec_copy_f32(_state[i].tip_interpolated_target, _state[i].tip_position_in_body_frame.translation, 3);
-            } else {
-                // Recalculate the tip position in body frame
-                matrix_3d_vec_transform(&Thexapod_to_body, tip_in_world, tip_in_body);
-            }
-
-            float32_t tip_in_coxa[3];
-            matrix_3d_vec_transform(&Ti, tip_in_world, tip_in_coxa);
-
-            float32_t origin[3] = {0, 0, 0};
-            float32_t angles[3];
-            inverse_kinematics(origin, tip_in_coxa, angles);
-
-            _state[i].joint_angles[0] = angles[0];
-            _state[i].joint_angles[1] = angles[1];
-            _state[i].joint_angles[2] = angles[2];
-
-            for (int j = 0; j < 3; j++) {
-                double angle = _state[i].joint_angles[j];
-                if (j == 2) {
-                    angle -= D2R(25);
+                if (!_state[i].grounded) {
+                    // We have a new position in the body frame, calculate the posistion in the
+                    // updated world frame
+                    matrix_3d_vec_transform(&Thexapod, _state[i].tip_interpolated_target, tip_in_world);
+                    arm_vec_copy_f32(_state[i].tip_interpolated_target,
+                                     _state[i].tip_position_in_body_frame.translation, 3);
+                } else {
+                    // Recalculate the tip position in body frame
+                    matrix_3d_vec_transform(&Thexapod_to_body, tip_in_world, tip_in_body);
                 }
-                gz::msgs::Double msg;
-                msg.set_data(angle);
 
-                _state[i].servo_publishers[j].Publish(msg);
+                float32_t tip_in_coxa[3];
+                matrix_3d_vec_transform(&Ti, tip_in_world, tip_in_coxa);
+
+                float32_t origin[3] = {0, 0, 0};
+                float32_t angles[3];
+                inverse_kinematics(origin, tip_in_coxa, angles);
+
+                _state[i].joint_angles[0] = angles[0];
+                _state[i].joint_angles[1] = angles[1];
+                _state[i].joint_angles[2] = angles[2];
+            }
+        }
+
+        // Update the legs
+        if (_motion_state != INITIALIZING) {
+            for (auto &s: _state) {
+                for (int j = 0; j < 3; j++) {
+                    double angle = s.joint_angles[j];
+                    if (j == 2) {
+                        angle -= D2R(25);
+                    }
+                    gz::msgs::Double msg;
+                    msg.set_data(angle);
+
+                    s.servo_publishers[j].Publish(msg);
+                }
             }
         }
 
         // Process any updates needed for the next cycle
-        gait_controller.update(_robot, _state, motion_vector, delta_t);
+        Gait::update(_state);
     }
 
     std::cout << "Terminating the Controller" << std::endl;
@@ -258,18 +272,7 @@ int Controller::run() {
         _node.UnadvertiseSrv(topic);
     }
 
-    if (!pauze(true)) {
-        std::cerr << "Unable to pauze the simulation" << std::endl;
-        return 0;
-    }
-
     std::this_thread::sleep_for(2000ms);
-
-    if (!this->removeModel()) {
-        std::cerr << "Unable to remove the model" << std::endl;
-        return 0;
-    }
-
 
     return 1;
 }
@@ -315,80 +318,19 @@ void Controller::jointStateCallback(const gz::msgs::Model &model) {
                 }
             }
 
-            this->_state[leg_index].actual_joint_angles[joint_index - 1] = (float32_t) joint.axis1().position();
+            auto v = (float32_t) joint.axis1().position();
+            auto joint_id = joint_index - 1;
+            if (joint_id == 2) {
+                v += D2R(25);
+            }
+
+            this->_state[leg_index].actual_joint_angles[joint_id] = v;
         }
     }
 }
 
-int Controller::createModel() {
-    gz::msgs::EntityFactory req{};
-    gz::msgs::Boolean res;
-    bool result;
-
-    req.set_sdf_filename("/models/hexspider/hexspider.sdf");
-    req.set_name("hexspider"); // New name for the entity, overrides the name on the SDF.
-    req.set_allow_renaming(false); // allowed to rename the entity in case of overlap with existing entities
 
 
-    bool executed = _node.Request("/world/hexspider_world/create", req, 1000, res, result);
-    if (!executed) {
-        std::cerr << "Timeout while calling create service" << std::endl;
-        return 0;
-    }
-
-    if (!result) {
-        std::cerr << "Service call failed" << std::endl;
-        return 0;
-    }
-
-    std::cout << "Model created" << std::endl;
-    return 1;
-}
-
-int Controller::removeModel() {
-    gz::msgs::Entity req{};
-    gz::msgs::Boolean res;
-    bool result;
-
-    req.set_name("hexspider");
-    req.set_type(gz::msgs::Entity_Type_MODEL);
-
-    bool executed = _node.Request("/world/hexspider_world/remove", req, 1000, res, result);
-    if (!executed) {
-        std::cerr << "Timeout while calling create service" << std::endl;
-        return 0;
-    }
-
-    if (!result) {
-        std::cerr << "Service call failed" << std::endl;
-        return 0;
-    }
-
-    std::cout << "Model removed" << std::endl;
-    return 1;
-}
-
-int Controller::pauze(bool pause) {
-    gz::msgs::WorldControl req{};
-    gz::msgs::Boolean res;
-    bool result;
-
-    req.set_pause(pause);
-
-    bool executed = _node.Request("/world/hexspider_world/control", req, 1000, res, result);
-    if (!executed) {
-        std::cerr << "Timeout while calling create service" << std::endl;
-        return 0;
-    }
-
-    if (!result) {
-        std::cerr << "Service call failed" << std::endl;
-        return 0;
-    }
-
-    std::cout << "Pause set to " << pause << "." << std::endl;
-    return 1;
-}
 
 int getStringCode(const std::string &input) {
     // Create a mapping of strings to numbers

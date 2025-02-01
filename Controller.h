@@ -9,6 +9,12 @@
 
 #include "Robot.h"
 
+enum motion_state {
+    INITIALIZING,
+    STANDING,
+    WALKING
+};
+
 class Controller {
 public:
     explicit Controller(Robot robot);
@@ -22,14 +28,13 @@ private:
     void clockCallback(const gz::msgs::Clock &clock);
     void jointStateCallback(const gz::msgs::Model &model);
 
-    int createModel();
-
     volatile bool terminate = false;
 
     Robot _robot;
     struct pose _hexapod{};
     struct pose _body{};
 
+    motion_state _motion_state = INITIALIZING;
     std::array<LegState, 6> _state;
 
     gz::transport::Node _node;
@@ -39,8 +44,4 @@ private:
     std::condition_variable _tick;
 
     uint64_t _time_us{};
-
-    int removeModel();
-
-    int pauze(bool pause);
 };

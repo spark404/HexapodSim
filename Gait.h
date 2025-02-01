@@ -10,14 +10,12 @@
 class Gait {
 public:
     void init();
-    void calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3], uint64_t delta_t);
-    void update(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3], uint64_t delta_t);
-    float32_t delta_tip[6][3];
+    void calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3]) const;
+    static void update(std::array<LegState, 6> &state);
 private:
     float32_t _step_size = 40.0f; // mm
     float32_t _lift_height = 25.0f; // mm
     float32_t _lift_incline_factor = 2.0f;
 };
-
 
 #endif //CONTROLLER_GAIT_H
