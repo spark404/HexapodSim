@@ -7,6 +7,7 @@
 from gz.transport13 import Node
 from gz.msgs10.double_pb2 import Double
 from gz.msgs10.model_pb2 import Model
+from gz.msgs10.imu_pb2 import IMU
 
 import time
 import pygame
@@ -16,7 +17,7 @@ from matrix import *
 from ik import *
 from config import CONFIG
 
-step_time = 1000  # ms
+step_time = 500  # ms
 
 
 def print_coordinates(coordinates: np.array):
@@ -74,16 +75,17 @@ def move_to_start_position():
 def main_loop(t):
     # Read the joystick
     fw = 5  # joystick.get_axis(1)
-    lr = 0   # joystick.get_axis(0)
-    h = 0    # joystick.get_axis(3)
-    r = 0    # joystick.get_axis(2)
+    lr = 0  # joystick.get_axis(0)
+    h = 0  # joystick.get_axis(3)
+    r = 0  # joystick.get_axis(2)
 
     # We want to move body forward with respect to the world coordinates
     # hexapod_location_in_world_frame = Pose(0, 0, 100, 0, 0, 0)
     hexapod_location_in_world_frame.translate(fw, lr, h)
 
     t_world_to_hexapod_frame = np.linalg.inv(create_transformation_matrix(hexapod_location_in_world_frame))
-    t_world_to_body_frame = np.matmul(t_world_to_hexapod_frame, np.linalg.inv(create_transformation_matrix(body_location_in_hexapod_frame)))
+    t_world_to_body_frame = np.matmul(t_world_to_hexapod_frame,
+                                      np.linalg.inv(create_transformation_matrix(body_location_in_hexapod_frame)))
 
     for leg in CONFIG["legs"]:
         name = leg["name"]
@@ -101,6 +103,7 @@ def main_loop(t):
 
         if state == "moving":
             tip_in_world_frame[0] += fw * 2
+            tip_in_world_frame[1] += lr * 2
             tip_in_world_frame[2] = 25
             if gait_step == 5:
                 tip_in_world_frame[2] = 0
@@ -111,8 +114,6 @@ def main_loop(t):
 
         ik = calculate_angles_3d_combined(new_coxa_coordinates[0], new_coxa_coordinates[1], new_coxa_coordinates[2])
         target = angles_to_position([ik[0], ik[1], ik[2]])
-        print(
-            f"{name} angles: {math.degrees(ik[0]):.2f}, {math.degrees(ik[1]):.2f}, {math.degrees(ik[2]):.2f}")
 
         d_upper.data = target[0]
         d_lower.data = target[1]
@@ -131,10 +132,22 @@ def main_loop(t):
 
 def joint_state_callback(model: Model):
     for joint in model.joint:
-        if joint.name.endswith("femur_joint"):
-            continue
         # limit_lower and limit_upper
         state[joint.name] = joint.axis1.position
+
+
+def imu_callback(imu: IMU):
+    global last
+    now = time.time_ns()
+
+    if last == 0:
+        last = now
+        return
+
+    delta_t = (now - last)
+    # print(delta_t)
+
+    last = now
 
 
 if __name__ == "__main__":
@@ -147,14 +160,17 @@ if __name__ == "__main__":
         joystick.init()
 
     state = {}
+    now = 0
+    last = 0
 
     node = Node()
-    node.subscribe(Model, "/world/hexspider_world/model/hexspider/joint_state", joint_state_callback)
+    # node.subscribe(Model, "/world/hexspider_world/model/hexspider/joint_state", joint_state_callback)
+    node.subscribe(IMU, "/world/hexspider_world/model/hexspider/link/chassis/sensor/imu_sensor/imu", imu_callback)
 
-    print("Waiting for valid joint data...")
-    while state.get("leg_fr_servo_1") is None or state.get("leg_fr_servo_1") == 0.0:
-        time.sleep(0.1)
-    print("Data valid!")
+    # print("Waiting for valid joint data...")
+    # while state.get("leg_fr_servo_1") is None or state.get("leg_fr_servo_1") == 0.0:
+    #     time.sleep(0.1)
+    # print("Data valid!")
 
     d_upper = Double()
     d_lower = Double()
@@ -169,7 +185,8 @@ if __name__ == "__main__":
     body_location_in_hexapod_frame = Pose(0, 0, 0, 0, 0, 0)
     t_hexapod_body_matrix = create_transformation_matrix(body_location_in_hexapod_frame)
     t_world_to_hexapod_frame = np.linalg.inv(create_transformation_matrix(hexapod_location_in_world_frame))
-    t_world_to_body_frame = np.matmul(t_world_to_hexapod_frame, np.linalg.inv(create_transformation_matrix(body_location_in_hexapod_frame)))
+    t_world_to_body_frame = np.matmul(t_world_to_hexapod_frame,
+                                      np.linalg.inv(create_transformation_matrix(body_location_in_hexapod_frame)))
 
     setup_leg_ik()
 
@@ -182,14 +199,11 @@ if __name__ == "__main__":
     target_heading = 0  # straight ahead for now
     gait_step = 0
 
-    hexapod_location_in_world_frame.translate(0,0, -70)
+    hexapod_location_in_world_frame.translate(0, 0, -60)
+
     try:
         while True:
             start = time.time_ns()
-            #for event in [pygame.event.wait(), ]:
-            #    pass
-
-            print("Gait step: " + str(gait_step))
 
             main_loop(t)
 
@@ -201,12 +215,15 @@ if __name__ == "__main__":
 
             diff = time.time_ns() - start
             if diff > step_time * 1000:
-                print(f"Overrun {diff}")
+                print(f"Overrun {diff / 1000}")
                 continue
             else:
-                print(f"Sleep {(step_time * 1000 - diff) / 1000}")
+                print(f"Sleep {(step_time * 1000 - diff) / 1000} ms")
 
             time.sleep((step_time * 1000 - diff) / 1000000)
 
     except KeyboardInterrupt:
-        pass
+        print("Unsubscribing topics")
+        node.unsubscribe("/world/hexspider_world/model/hexspider/link/chassis/sensor/imu_sensor/imu")
+        node.unsubscribe("/world/hexspider_world/model/hexspider/joint_state")
+        print("Done")

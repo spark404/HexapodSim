@@ -74,6 +74,9 @@
       <joint_name>leg_fl_servo_3</joint_name>
       <p_gain>10</p_gain>
     </plugin>
+    <plugin filename="gz-sim-imu-system"
+        name="gz::sim::systems::Imu">
+    </plugin>
     <link name="chassis">
       <pose relative_to="__model__">0 0 0.15 0 0 -1.57</pose>
       <inertial>
@@ -110,6 +113,12 @@
           </box>
         </geometry>
       </collision>
+      <sensor name="imu_sensor" type="imu">
+        <always_on>1</always_on>
+        <update_rate>1</update_rate>
+        <visualize>true</visualize>
+        <!-- <topic>/model/hexspider/imu</topic> -->
+      </sensor>
     </link>
     <link name="leg_br_2xl_430">
       <pose relative_to="chassis">0.058219 -0.083748 0.0 0 0 0.610865</pose>
