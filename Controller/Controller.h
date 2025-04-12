@@ -8,6 +8,7 @@
 #include <gz/msgs.hh>
 
 #include "Robot.h"
+#include "motion.h"
 
 enum motion_state {
     INITIALIZING,
@@ -42,6 +43,8 @@ private:
 
     std::mutex _tick_mutex;
     std::condition_variable _tick;
+
+    BaseMotion *_base_motion;
 
     uint64_t _time_us{};
 };

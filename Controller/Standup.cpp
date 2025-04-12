@@ -11,6 +11,15 @@
 #include "pose.h"
 #include "matrix_3d.h"
 
+void printCoordinate(const float coord[3]) {
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Coordinate: ("
+              << coord[0] << ", "
+              << coord[1] << ", "
+              << coord[2] << ")"
+              << std::endl;
+}
+
 void Standup::init() {
 
 }
@@ -38,6 +47,12 @@ void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, cons
                 robot.leg[i].tip_starting_position[1],
                 0
         };
+
+        if (i==0) {
+            printCoordinate(p_target);
+            printCoordinate(p_current_coxa);
+            printCoordinate(p_current);
+        }
 
         float32_t path[4][3];
         calculate_path(p_current, p_target, _lift_height, _lift_incline_factor, path);

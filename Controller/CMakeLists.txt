@@ -38,6 +38,6 @@ add_executable(Controller main.cpp
 
 target_link_libraries(Controller PRIVATE
         gz-transport14::core
-        CMSISDSP
         HexapodMath
+        CMSISDSP
 )

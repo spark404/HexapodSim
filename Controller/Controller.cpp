@@ -168,12 +168,12 @@ int Controller::run() {
             _state[0].actual_joint_angles[2] == 0.0f) {
                 // no joint state update yet
                 continue;
-            } else {
-                for (int i=0; i<6; i++) {
-                    arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].prev_joint_angles, 3);
-                }
-                _motion_state = STANDING;
             }
+            for (int i=0; i<6; i++) {
+                arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].prev_joint_angles, 3);
+            }
+            _motion_state = STANDING;
+            _base_motion = &standup_controller;
         }
 
         float32_t stepsize = velocity * (float32_t)delta_t / 1000000;
@@ -194,12 +194,9 @@ int Controller::run() {
         arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
 
         // Calculate the targets for the current cycle
-        if (_motion_state == STANDING) {
-            standup_controller.calculate(_robot, _state, movement_vector);
-        }
-        else {
-            gait_controller.calculate(_robot, _state, movement_vector);
+        _base_motion->calculate(_robot, _state, movement_vector);
 
+        if (_motion_state == WALKING) {
             // Calculate the servo angles and publish
             for (int i = 0; i < 6; i++) {
                 MATRIX4(Tcoxa);
@@ -258,7 +255,7 @@ int Controller::run() {
         }
 
         // Process any updates needed for the next cycle
-        Gait::update(_state);
+        _base_motion->update(_state);
     }
 
     std::cout << "Terminating the Controller" << std::endl;
