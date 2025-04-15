@@ -12,7 +12,7 @@ public:
     virtual ~BaseMotion() = default;
 
     virtual void init() = 0;
-    virtual void calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3]) const = 0;
+    virtual void calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3], float32_t delta_t_ms) const = 0;
     virtual void update(std::array<LegState, 6> &state) = 0;
 };
 

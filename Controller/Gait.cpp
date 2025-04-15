@@ -23,7 +23,7 @@ void Gait::update(std::array<LegState, 6> &state) {
     }
 }
 
-void Gait::calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3]) const {
+void Gait::calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t movement_vector[3], float32_t delta_t_ms) const {
     if (movement_vector[0] == 0 && movement_vector[1] == 0) {
         // No movement in the X-Y plane, ground all the legs
         for (auto & i : state) {

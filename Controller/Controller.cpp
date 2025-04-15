@@ -194,7 +194,7 @@ int Controller::run() {
         arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
 
         // Calculate the targets for the current cycle
-        _base_motion->calculate(_robot, _state, movement_vector);
+        _base_motion->calculate(_robot, _state, movement_vector, (float32_t)delta_t / 1000000);
 
         if (_motion_state == WALKING) {
             // Calculate the servo angles and publish
