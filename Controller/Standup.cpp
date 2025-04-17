@@ -25,7 +25,7 @@ void Standup::init() {
 }
 
 void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t *movement_vector, float32_t delta_t_ms) const {
-    for (int i=0; i<6; i++) {
+    for (int i=1; i<2; i++) {
 
         auto &leg = state[i];
 
@@ -91,9 +91,15 @@ void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, cons
         float32_t next_in_coxa[3];
         matrix_3d_vec_transform(&Tcoxa_inv, next, next_in_coxa);
 
+
         float32_t origin[3] = {0, 0, 0};
         arm_vec_copy_f32(leg.joint_angles, leg.prev_joint_angles, 3);
         inverse_kinematics(origin, next_in_coxa, leg.joint_angles);
+
+        if (i==1) {
+            printCoordinate(p_current_coxa);
+            printCoordinate(next_in_coxa);
+        }
     }
 }
 

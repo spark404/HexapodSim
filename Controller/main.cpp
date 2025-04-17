@@ -4,6 +4,7 @@
 
 #include "Controller.h"
 #include "Robot.h"
+#include "ServoTest.h"
 
 std::mutex terminate;
 std::condition_variable terminate_lock;
@@ -44,13 +45,14 @@ int main() {
         return 1;
     }
 
-    auto *instance = new Controller(r);
+    // auto *instance = new Controller(r);
+    auto *instance = new ServoTest();
     if (!instance->init()) {
         std::cerr << "Init failed" << std::endl;
         return 1;
     }
 
-    std::thread t1(&Controller::run, instance);
+    std::thread t1(&ServoTest::run, instance);
 
     terminate_lock.wait(lk);
     instance->shutdown();

@@ -34,6 +34,7 @@ add_executable(Controller main.cpp
         Controller.cpp
         Gait.cpp
         Standup.cpp
+        ServoTest.cpp
 )
 
 target_link_libraries(Controller PRIVATE

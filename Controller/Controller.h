@@ -44,7 +44,7 @@ private:
     std::mutex _tick_mutex;
     std::condition_variable _tick;
 
-    BaseMotion *_base_motion;
+    BaseMotion *_base_motion = nullptr;
 
     uint64_t _time_us{};
 };

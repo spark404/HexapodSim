@@ -133,7 +133,7 @@ int Controller::run() {
     pose_set(&_hexapod, 0, 0, 150, 0, 0, 0);
     pose_set(&_body, 0, 0, -50, 0, 0, 0);
 
-    float32_t velocity = 0; // mm/s
+    float32_t velocity = 50; // mm/s
     float32_t heading = 0;
 
     Gait gait_controller{};
@@ -162,6 +162,8 @@ int Controller::run() {
             continue;
         }
 
+        std::cout << delta_t << std::endl;
+
         if (_motion_state == INITIALIZING) {
             if (_state[0].actual_joint_angles[0] == 0.0f &&
             _state[0].actual_joint_angles[1] == 0.0f &&
@@ -172,9 +174,15 @@ int Controller::run() {
             for (int i=0; i<6; i++) {
                 arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].prev_joint_angles, 3);
             }
-            _motion_state = STANDING;
-            _base_motion = &standup_controller;
+            _motion_state = WALKING;
+            _base_motion = &gait_controller;
         }
+
+        std::cout << R2D(_state[1].joint_angles[0]) << "," << R2D(_state[1].joint_angles[1]) <<
+            "," << R2D(_state[1].joint_angles[2]) << std::endl;
+        std::cout << R2D(_state[1].actual_joint_angles[0]) << "," << R2D(_state[1].actual_joint_angles[1]) <<
+            "," << R2D(_state[1].actual_joint_angles[2]) << std::endl << std::endl;
+
 
         float32_t stepsize = velocity * (float32_t)delta_t / 1000000;
         _hexapod.translation[0] += stepsize * cos(heading);
@@ -279,14 +287,20 @@ void Controller::shutdown() {
     _tick.notify_one();
 }
 
+int ticker = 0;
 void Controller::clockCallback(const gz::msgs::Clock &clock) {
     const uint64_t time_us = (clock.sim().sec() * 1000000) + (clock.sim().nsec() / 1000);
     if (time_us <= _time_us) {
         return;
     }
     _time_us = time_us;
-    _tick.notify_one();
-    // std::cout << "Tick" << std::endl;
+
+    ticker++;
+    if (ticker==2) {
+        // Tick the main loop of the controller
+        ticker = 0;
+        _tick.notify_one();
+    }
 }
 
 void Controller::jointStateCallback(const gz::msgs::Model &model) {
