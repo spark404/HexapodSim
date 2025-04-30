@@ -6,7 +6,7 @@
 
 #include "Gait.h"
 #include "Robot.h"
-#include "hexapod.h"
+#include "hexapodmath/hexapod.h"
 
 void Gait::init() {
 

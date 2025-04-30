@@ -3,11 +3,10 @@
 //
 #include<string>
 #include<iostream>
-#include<gz/msgs.hh>
 
 #include "ServoTest.h"
 
-#include <additional_functions.h>
+#include <hexapodmath/additional_functions.h>
 
 int ServoTest::init() {
     return 1;
@@ -16,7 +15,7 @@ int ServoTest::init() {
 int ServoTest::run() {
     using namespace std::chrono_literals;
 
-    std::unique_lock<std::mutex> lk(_tick_mutex);
+    std::unique_lock lk(_tick_mutex);
     uint64_t last_time_us = 0;
 
     std::cout << "Starting listeners for joint state" << std::endl;
@@ -68,18 +67,17 @@ int ServoTest::run() {
 
         if (first_tick) { countdown--; }
 
-        std::cout << delta_t << std::endl;
     }
 
     std::cout << "Terminating the Controller" << std::endl;
-    for (const auto &topic: _node.SubscribedTopics()) {
-        std::cout << "Unsubscribing " << topic << std::endl;
-        _node.Unsubscribe(topic);
+    for (const auto &subscribed_topic: _node.SubscribedTopics()) {
+        std::cout << "Unsubscribing " << subscribed_topic << std::endl;
+        _node.Unsubscribe(subscribed_topic);
     }
 
-    for (const auto &topic: _node.AdvertisedTopics()) {
-        std::cout << "Stop publishing " << topic << std::endl;
-        _node.UnadvertiseSrv(topic);
+    for (const auto &advertised_topic: _node.AdvertisedTopics()) {
+        std::cout << "Stop publishing " << advertised_topic << std::endl;
+        _node.UnadvertiseSrv(advertised_topic);
     }
 
     std::this_thread::sleep_for(2000ms);

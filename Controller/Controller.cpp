@@ -4,12 +4,11 @@
 
 #include "Controller.h"
 
-#include "inverse_kinematics.h"
-#include "forward_kinematics.h"
-#include "matrix_3d.h"
+#include "hexapodmath/inverse_kinematics.h"
+#include "hexapodmath/forward_kinematics.h"
+#include "hexapodmath/matrix_3d.h"
 
-#include <utility>
-#include <conversion_2d.h>
+#include <hexapodmath/conversion_2d.h>
 
 #include "Gait.h"
 #include "Standup.h"
@@ -174,8 +173,8 @@ int Controller::run() {
             for (int i=0; i<6; i++) {
                 arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].prev_joint_angles, 3);
             }
-            _motion_state = WALKING;
-            _base_motion = &gait_controller;
+            _motion_state = STANDING;
+            _base_motion = &standup_controller;
         }
 
         std::cout << R2D(_state[1].joint_angles[0]) << "," << R2D(_state[1].joint_angles[1]) <<

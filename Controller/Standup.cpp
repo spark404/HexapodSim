@@ -4,12 +4,11 @@
 
 #include "Standup.h"
 
-#include "additional_functions.h"
-#include "forward_kinematics.h"
-#include "inverse_kinematics.h"
-#include "hexapod.h"
-#include "pose.h"
-#include "matrix_3d.h"
+#include "hexapodmath/additional_functions.h"
+#include "hexapodmath/forward_kinematics.h"
+#include "hexapodmath/inverse_kinematics.h"
+#include "hexapodmath/pose.h"
+#include "hexapodmath/matrix_3d.h"
 
 void printCoordinate(const float coord[3]) {
     std::cout << std::fixed << std::setprecision(2);
@@ -97,8 +96,9 @@ void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, cons
         inverse_kinematics(origin, next_in_coxa, leg.joint_angles);
 
         if (i==1) {
-            printCoordinate(p_current_coxa);
-            printCoordinate(next_in_coxa);
+            printCoordinate(p_current);
+            printCoordinate(next);
+            printCoordinate(p_target);
         }
     }
 }

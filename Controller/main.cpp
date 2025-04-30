@@ -45,14 +45,14 @@ int main() {
         return 1;
     }
 
-    // auto *instance = new Controller(r);
-    auto *instance = new ServoTest();
+    auto *instance = new Controller(r);
+    //auto *instance = new ServoTest();
     if (!instance->init()) {
         std::cerr << "Init failed" << std::endl;
         return 1;
     }
 
-    std::thread t1(&ServoTest::run, instance);
+    std::thread t1(&Controller::run, instance);
 
     terminate_lock.wait(lk);
     instance->shutdown();

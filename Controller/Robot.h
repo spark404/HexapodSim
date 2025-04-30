@@ -8,8 +8,8 @@
 #include <array>
 #include <gz/transport.hh>
 
-#include <additional_functions.h>
-#include <pose.h>
+#include <hexapodmath/additional_functions.h>
+#include <hexapodmath/pose.h>
 
 struct Leg {
     std::string name;
