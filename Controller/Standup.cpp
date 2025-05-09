@@ -4,14 +4,15 @@
 
 #include "Standup.h"
 
-#include "hexapodmath/additional_functions.h"
-#include "hexapodmath/forward_kinematics.h"
-#include "hexapodmath/inverse_kinematics.h"
-#include "hexapodmath/pose.h"
-#include "hexapodmath/matrix_3d.h"
+#include "additional_functions.h"
+#include "forward_kinematics.h"
+#include "inverse_kinematics.h"
+#include "hexapod.h"
+#include "pose.h"
+#include "matrix_3d.h"
 
 void printCoordinate(const float coord[3]) {
-    std::cout << std::fixed << std::setprecision(2);
+    std::cout << std::fixed << std::setprecision(5);
     std::cout << "Coordinate: ("
               << coord[0] << ", "
               << coord[1] << ", "
@@ -23,8 +24,8 @@ void Standup::init() {
 
 }
 
-void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t *movement_vector, float32_t delta_t_ms) const {
-    for (int i=1; i<2; i++) {
+void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, const float32_t *movement_vector, float32_t delta_t_ms) {
+    for (int i=0; i<6; i++) {
 
         auto &leg = state[i];
 
@@ -44,65 +45,75 @@ void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, cons
         float32_t p_target[3] = {
                 robot.leg[i].tip_starting_position[0],
                 robot.leg[i].tip_starting_position[1],
-                0
+                -75
         };
 
-        float32_t direction[2];
-        float32_t unit_direction[2];
-        arm_vec_sub_f32(p_target, p_current, direction, 2);
-        arm_vec_normalize_f32(direction, unit_direction, 2);
+        calculate_motion_step(p_current, p_target, &Tcoxa_inv, delta_t_ms, leg.joint_angles);
 
-        float32_t movement[2];
-        arm_vec_mult_scalar_f32(unit_direction, _velocity * delta_t_ms, movement, 2);
-
-        float32_t remaining_distance = arm_euclidean_distance_f32(p_current, p_target, 2);
-        float32_t remaining_duration_s = remaining_distance / _velocity;
-
-        // Compute list distance and duration
-        float32_t lift_distance = p_target[2] - p_current[2] + _lift_height;
-        float32_t lift_duration_s = abs(lift_distance) / _lift_velocity;
-        float32_t lower_duration_s = _lift_height / _lift_velocity;
-
-        // If double the lift_duration is greater than the total
-        // time to move the leg we need to recalculate the lift height
-        float32_t calculated_lift_height = _lift_height;
-        if ((2 *lift_duration_s ) > remaining_duration_s) {
-            calculated_lift_height = calculated_lift_height * (remaining_duration_s / (2 * lift_duration_s));
-        }
-
-        // If the time taken to lower the leg is great than the remaining
-        // movement we need to adjust the lift_height
-        if (lower_duration_s > remaining_duration_s) {
-            calculated_lift_height = _lift_height * (remaining_duration_s / lower_duration_s);
-        }
-
-        float32_t target_height = p_target[2] + calculated_lift_height;
-
-        float32_t z = p_current[2];
-        if (p_current[2] < target_height) {
-            z = std::min(p_current[2] + _lift_velocity * delta_t_ms, p_current[2] + calculated_lift_height * delta_t_ms);
-        } else if (p_current[2] > target_height) {
-            z = p_current[2] - _lift_velocity * delta_t_ms;
-        }
-
-        float32_t next[3] = {p_current[0] + movement[0], p_current[1] + movement[1], z};
-
-        float32_t next_in_coxa[3];
-        matrix_3d_vec_transform(&Tcoxa_inv, next, next_in_coxa);
-
-
-        float32_t origin[3] = {0, 0, 0};
-        arm_vec_copy_f32(leg.joint_angles, leg.prev_joint_angles, 3);
-        inverse_kinematics(origin, next_in_coxa, leg.joint_angles);
-
-        if (i==1) {
-            printCoordinate(p_current);
-            printCoordinate(next);
-            printCoordinate(p_target);
-        }
+        printCoordinate(leg.prev_joint_angles);
+        printCoordinate(leg.actual_joint_angles);
+        printCoordinate(leg.joint_angles);
     }
 }
 
 void Standup::update(std::array<LegState, 6> &state) {
 
+}
+
+void Standup::calculate_motion_step(float32_t current[3], float32_t target[3], arm_matrix_instance_f32 *transform, float32_t delta_t_s, float32_t angles[3]) {
+    float32_t direction[2];
+    float32_t unit_direction[2];
+    arm_vec_sub_f32(target, current, direction, 2);
+    arm_vec_normalize_f32(direction, unit_direction, 2);
+
+    float32_t remaining_distance = arm_euclidean_distance_f32(current, target, 2);
+    float32_t remaining_duration_s = remaining_distance / _velocity;
+    printf("Remaining XY distance is %f\n", remaining_distance);
+
+    float32_t movement[2] = {0, 0};
+    float32_t max_movement = _velocity * delta_t_s;
+    if (remaining_distance < max_movement) {
+        max_movement = remaining_distance;
+    }
+    arm_vec_mult_scalar_f32(unit_direction, max_movement, movement, 2);
+
+    // Compute list distance and duration
+    float32_t lift_distance = target[2] - current[2] + _lift_height;
+    float32_t lift_duration_s = fabsf(lift_distance) / _lift_velocity;
+    float32_t lower_duration_s = _lift_height / _lift_velocity;
+
+    // If double the lift_duration is greater than the total
+    // time to move the leg we need to recalculate the lift height
+    float32_t calculated_lift_height = _lift_height;
+    if ((2 *lift_duration_s ) > remaining_duration_s) {
+        calculated_lift_height = calculated_lift_height * (remaining_duration_s / (2 * lift_duration_s));
+    }
+
+    // If the time taken to lower the leg is great than the remaining
+    // movement we need to adjust the lift_height
+    if (lower_duration_s > remaining_duration_s) {
+        calculated_lift_height = _lift_height * (remaining_duration_s / lower_duration_s);
+    }
+
+    float32_t target_height = target[2] + calculated_lift_height;
+    printf("Target height is %f\n", target_height);
+
+    float32_t z = current[2];
+    float32_t max_z_movement = fminf(_lift_velocity * delta_t_s, fabsf(target_height - current[2]));
+
+    if (current[2] < target_height) {
+        z = fminf(current[2] + max_z_movement, target[2] + calculated_lift_height);
+    } else if (current[2] > target_height) {
+        z = current[2] - max_z_movement;
+    }
+    printf("Z-heigth is %f\n", current[2]);
+    printf("Next height is %f (max movement %f)\n", z, max_z_movement);
+
+    float32_t next[3] = {current[0] + movement[0], current[1] + movement[1], z};
+
+    float32_t next_in_coxa[3];
+    matrix_3d_vec_transform(transform, next, next_in_coxa);
+
+    float32_t origin[3] = {0, 0, 0};
+    inverse_kinematics(origin, next_in_coxa, angles);
 }

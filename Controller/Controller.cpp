@@ -161,8 +161,6 @@ int Controller::run() {
             continue;
         }
 
-        std::cout << delta_t << std::endl;
-
         if (_motion_state == INITIALIZING) {
             if (_state[0].actual_joint_angles[0] == 0.0f &&
             _state[0].actual_joint_angles[1] == 0.0f &&
@@ -176,12 +174,6 @@ int Controller::run() {
             _motion_state = STANDING;
             _base_motion = &standup_controller;
         }
-
-        std::cout << R2D(_state[1].joint_angles[0]) << "," << R2D(_state[1].joint_angles[1]) <<
-            "," << R2D(_state[1].joint_angles[2]) << std::endl;
-        std::cout << R2D(_state[1].actual_joint_angles[0]) << "," << R2D(_state[1].actual_joint_angles[1]) <<
-            "," << R2D(_state[1].actual_joint_angles[2]) << std::endl << std::endl;
-
 
         float32_t stepsize = velocity * (float32_t)delta_t / 1000000;
         _hexapod.translation[0] += stepsize * cos(heading);
@@ -249,6 +241,7 @@ int Controller::run() {
         if (_motion_state != INITIALIZING) {
             for (auto &s: _state) {
                 for (int j = 0; j < 3; j++) {
+                    s.prev_joint_angles[j] = s.actual_joint_angles[j];
                     double angle = s.joint_angles[j];
                     if (j == 2) {
                         angle -= D2R(25);
