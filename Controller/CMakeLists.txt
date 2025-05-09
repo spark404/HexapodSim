@@ -24,7 +24,7 @@ if (NOT HexapodMath_FOUND)
     FetchContent_Declare(
             HexapodMath
             GIT_REPOSITORY https://github.com/spark404/HexapodMath
-            GIT_TAG main
+            GIT_TAG e8b53c79cb186cb58f96ad53b70566932db14753
             OVERRIDE_FIND_PACKAGE
     )
     FetchContent_MakeAvailable(HexapodMath)
