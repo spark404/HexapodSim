@@ -28,30 +28,40 @@ void Standup::calculate(const Robot &robot, std::array<LegState, 6> &state, cons
 
         auto &leg = state[i];
 
-        float32_t p_current_coxa[3];
-        forward_kinematics(leg.actual_joint_angles, p_current_coxa);
-
-        float32_t p_current[3];
-
+        // Prepare transformations for this leg
         MATRIX4(Tcoxa);
         pose_get_transformation(&leg.coxa_joint_in_body_frame, &Tcoxa);
-
         MATRIX4(Tcoxa_inv);
         matrix_3d_invert(&Tcoxa, &Tcoxa_inv);
 
+        // Presets
+        float32_t p_target[3] = {
+            robot.leg[i].tip_starting_position[0],
+            robot.leg[i].tip_starting_position[1],
+            -100
+        };
+        float32_t origin[3] = {0, 0, 0};
+
+        // State variables
+        float32_t p_current_coxa[3] = {0.0, 0.0, 0.0};
+        float32_t p_current[3] = {0.0, 0.0, 0.0};
+        float32_t p_next[3] = {0.0, 0.0, 0.0};
+        float32_t p_next_coxa[3] = {0.0, 0.0, 0.0};
+        float32_t a_next[3] = {0.0, 0.0, 0.0};
+
+        arm_vec_copy_f32(leg.actual_joint_angles, p_current, 3);
+
+        // Actual angles to current world position
+        forward_kinematics(p_current, p_current_coxa);
         matrix_3d_vec_transform(&Tcoxa, p_current_coxa, p_current);
 
-        float32_t p_target[3] = {
-                robot.leg[i].tip_starting_position[0],
-                robot.leg[i].tip_starting_position[1],
-                -75
-        };
+        // Calculate the next step
+        calculate_motion_step(p_current, p_target, p_next, delta_t_ms);
+        matrix_3d_vec_transform(&Tcoxa_inv, p_next, p_next_coxa);
+        inverse_kinematics(origin, p_next_coxa, a_next);
 
-        calculate_motion_step(p_current, p_target, &Tcoxa_inv, delta_t_ms, leg.joint_angles);
-
-        printCoordinate(leg.prev_joint_angles);
-        printCoordinate(leg.actual_joint_angles);
-        printCoordinate(leg.joint_angles);
+        // Copy the joint angles for the next step
+        arm_vec_copy_f32(a_next, leg.joint_angles, 3);
     }
 }
 
@@ -59,7 +69,7 @@ void Standup::update(std::array<LegState, 6> &state) {
 
 }
 
-void Standup::calculate_motion_step(float32_t current[3], float32_t target[3], arm_matrix_instance_f32 *transform, float32_t delta_t_s, float32_t angles[3]) {
+void Standup::calculate_motion_step(float32_t current[3], float32_t target[3], float32_t next[3], float32_t delta_t_s) {
     float32_t direction[2];
     float32_t unit_direction[2];
     arm_vec_sub_f32(target, current, direction, 2);
@@ -108,11 +118,7 @@ void Standup::calculate_motion_step(float32_t current[3], float32_t target[3], a
     printf("Z-heigth is %f\n", current[2]);
     printf("Next height is %f (max movement %f)\n", z, max_z_movement);
 
-    float32_t next[3] = {current[0] + movement[0], current[1] + movement[1], z};
-
-    float32_t next_in_coxa[3];
-    matrix_3d_vec_transform(transform, next, next_in_coxa);
-
-    float32_t origin[3] = {0, 0, 0};
-    inverse_kinematics(origin, next_in_coxa, angles);
+    next[0] = current[0] + movement[0];
+    next[1] = current[1] + movement[1];
+    next[2] = z;
 }

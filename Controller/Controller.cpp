@@ -23,8 +23,8 @@ Controller::Controller(Robot robot) {
 Controller::~Controller() = default;
 
 int Controller::init() {
-    pose_set(&_hexapod, 0, 0, 150, 0, 0, 0);
-    pose_set(&_body, 0, 0, 0, 0, 0, 0);
+    pose_set(&_hexapod, 0, 0, 0, 0, 0, 0);
+    pose_set(&_body, 0, 0, 150, 0, 0, 0);
 
     MATRIX4(Thexapod);
     MATRIX4(Tbody);
@@ -129,10 +129,10 @@ int Controller::run() {
         return 0;
     }
 
-    pose_set(&_hexapod, 0, 0, 150, 0, 0, 0);
-    pose_set(&_body, 0, 0, -50, 0, 0, 0);
+    pose_set(&_hexapod, 0, 0, 0, 0, 0, 0);
+    pose_set(&_body, 0, 0, 100, 0, 0, 0);
 
-    float32_t velocity = 50; // mm/s
+    float32_t velocity = 40; // mm/s
     float32_t heading = 0;
 
     Gait gait_controller{};
@@ -140,6 +140,10 @@ int Controller::run() {
 
     Standup standup_controller{};
     standup_controller.init();
+
+    uint32_t count = 0;
+
+    float32_t delta_angle[3]{};
 
     while (!terminate) {
         // Wait for a sync pulse from gazebo on the clock topic
@@ -155,9 +159,12 @@ int Controller::run() {
         }
 
         uint64_t delta_t = _time_us - last_time_us;
+        if (delta_t < 10000) {
+            continue;
+        }
         last_time_us = _time_us;
 
-        if (delta_t > 10000) {
+        if (delta_t > 1000000) {
             continue;
         }
 
@@ -168,32 +175,79 @@ int Controller::run() {
                 // no joint state update yet
                 continue;
             }
-            for (int i=0; i<6; i++) {
-                arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].prev_joint_angles, 3);
-            }
-            _motion_state = STANDING;
-            _base_motion = &standup_controller;
+
+            _motion_state = SYNCING;
         }
 
-        float32_t stepsize = velocity * (float32_t)delta_t / 1000000;
-        _hexapod.translation[0] += stepsize * cos(heading);
-        _hexapod.translation[1] += stepsize * sin(heading);
+        if (_motion_state == SYNCING) {
+            int sync_done = 1;
+            for (int i=0; i<6; i++) {
+                arm_vec_sub_f32(_state[i].actual_joint_angles, _state[i].joint_angles, delta_angle, 3);
+                if (fabs(delta_angle[0]) > 0.02 || fabs(delta_angle[1]) > 0.02 || fabs(delta_angle[2]) > 0.02) {
+                    sync_done = 0;
+                }
+            }
 
-        float32_t motion_vector[3] = { velocity * cos(heading), velocity * sin(heading), 0};
+            if (sync_done) {
+                _motion_state = STANDING;
+                _base_motion = &standup_controller;
+                // _motion_state = WALKING;
+                // _base_motion = &gait_controller;
+            } else {
+                for (int i=0; i<6; i++) {
+                    arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].joint_angles, 3);
+                }
+            }
+        }
+
+        if (count == 1200) {
+            _motion_state = WALKING;
+            _base_motion = &gait_controller;
+        }
+
         float32_t movement_vector[3];
-        arm_vec_mult_scalar_f32(motion_vector, (float32_t)delta_t / 1000000, movement_vector, 3);
+        if (_motion_state == WALKING) {
+            float32_t motion_vector[3] = { velocity * cos(heading), velocity * sin(heading), 0};
+            arm_vec_mult_scalar_f32(motion_vector, (float32_t)delta_t / 1000000, movement_vector, 3);
+        } else {
+            movement_vector[0] = 0.0;
+            movement_vector[1] = 0.0;
+            movement_vector[2] = 0.0;
+        }
+
+        // Update the projected location of the hexapod in the world
+        // this is the basis for where we should end up with the current
+        // movement.
+        _hexapod.translation[0] += movement_vector[0];
+        _hexapod.translation[1] += movement_vector[1];
+
 
         MATRIX4(Thexapod);
-        MATRIX4(Tbody);
-
         pose_get_transformation(&_hexapod, &Thexapod);
+
+        MATRIX4(Tbody);
         pose_get_transformation(&_body, &Tbody);
+
+        MATRIX4(Thexapod_to_body);
+        matrix_3d_invert(&Thexapod, &Thexapod_to_body);
 
         MATRIX4(T1);
         arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
 
         // Calculate the targets for the current cycle
-        _base_motion->calculate(_robot, _state, movement_vector, (float32_t)delta_t / 1000000);
+        std::cout << count++ << "," << _state[1].joint_angles[0] - _state[1].actual_joint_angles[0] << "," <<
+            _state[1].joint_angles[1] - _state[1].actual_joint_angles[1] << "," <<
+                _state[1].joint_angles[2] - _state[1].actual_joint_angles[2] << "," << _motion_state << std::endl;
+
+        if (_motion_state == STANDING || _motion_state == WALKING) {
+            // The actual joint angles are unreliable, so use the target position from the
+            // previous step as the current position
+            for (int i=0; i<6; i++) {
+                arm_vec_copy_f32(_state[i].joint_angles, _state[i].actual_joint_angles, 3);
+            }
+
+            _base_motion->calculate(_robot, _state, movement_vector, (float32_t)delta_t / 1000000);
+        }
 
         if (_motion_state == WALKING) {
             // Calculate the servo angles and publish
@@ -207,14 +261,11 @@ int Controller::run() {
                 MATRIX4(Ti);
                 matrix_3d_invert(&T, &Ti);
 
-                MATRIX4(Thexapod_to_body);
-                matrix_3d_invert(&Thexapod, &Thexapod_to_body);
-
                 float32_t *tip_in_world = _state[i].tip_position_in_world_frame.translation;
                 float32_t *tip_in_body = _state[i].tip_position_in_body_frame.translation;
 
                 if (!_state[i].grounded) {
-                    // We have a new position in the body frame, calculate the posistion in the
+                    // We have a new position in the body frame, calculate the position in the
                     // updated world frame
                     matrix_3d_vec_transform(&Thexapod, _state[i].tip_interpolated_target, tip_in_world);
                     arm_vec_copy_f32(_state[i].tip_interpolated_target,
@@ -244,7 +295,7 @@ int Controller::run() {
                     s.prev_joint_angles[j] = s.actual_joint_angles[j];
                     double angle = s.joint_angles[j];
                     if (j == 2) {
-                        angle -= D2R(25);
+                        angle -= D2R(55);
                     }
                     gz::msgs::Double msg;
                     msg.set_data(angle);
@@ -255,7 +306,9 @@ int Controller::run() {
         }
 
         // Process any updates needed for the next cycle
-        _base_motion->update(_state);
+        if (_motion_state == STANDING || _motion_state == WALKING) {
+            _base_motion->update(_state);
+        }
     }
 
     std::cout << "Terminating the Controller" << std::endl;
@@ -324,7 +377,7 @@ void Controller::jointStateCallback(const gz::msgs::Model &model) {
             auto v = (float32_t) joint.axis1().position();
             auto joint_id = joint_index - 1;
             if (joint_id == 2) {
-                v += D2R(25);
+                v += D2R(55);
             }
 
             this->_state[leg_index].actual_joint_angles[joint_id] = v;

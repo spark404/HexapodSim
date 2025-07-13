@@ -4,109 +4,111 @@
         <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"></plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_1</joint_name>
-            <p_gain>100</p_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_2</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_3</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_1</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_2</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_3</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_1</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_2</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_3</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_1</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_2</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_3</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_1</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_2</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_3</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_1</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_2</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_3</joint_name>
-            <p_gain>100</p_gain>
-            <i_gain>1000</i_gain>
-            <d_gain>0.5</d_gain>
+                        <p_gain>40</p_gain>
+            <i_gain>4</i_gain>
+            <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-imu-system"
                 name="gz::sim::systems::Imu">

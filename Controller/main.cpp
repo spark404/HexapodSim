@@ -5,6 +5,11 @@
 #include "Controller.h"
 #include "Robot.h"
 #include "ServoTest.h"
+#include "Standup.h"
+#include "hexapodmath/conversion_2d.h"
+#include "hexapodmath/forward_kinematics.h"
+#include "hexapodmath/inverse_kinematics.h"
+#include "hexapodmath/matrix_3d.h"
 
 std::mutex terminate;
 std::condition_variable terminate_lock;
@@ -39,6 +44,8 @@ int main() {
         std::cerr << "Model create failed" << std::endl;
         return 1;
     }
+
+    sleep(1);
 
     if (!follow()) {
         std::cerr << "Follow failed" << std::endl;
@@ -155,7 +162,7 @@ int follow() {
     target.set_data("hexspider");
     offset.set_x(0.0f);
     offset.set_y(-0.50f);
-    offset.set_z(0.50f);
+    offset.set_z(0.30f);
 
     bool executed = node.Request("/gui/follow/offset", offset, 1000, res, result);
     if (!executed) {

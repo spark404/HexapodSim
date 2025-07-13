@@ -12,6 +12,7 @@
 
 enum motion_state {
     INITIALIZING,
+    SYNCING,
     STANDING,
     WALKING
 };

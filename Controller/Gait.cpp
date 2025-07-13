@@ -15,8 +15,9 @@ void Gait::init() {
 void Gait::update(std::array<LegState, 6> &state) {
     uint32_t lifted_leg = state[0].grounded ? 1 : 0;
     float32_t remaining_travel = arm_euclidean_distance_f32(state[lifted_leg].tip_target, state[lifted_leg].tip_interpolated_target, 3);
-    if (almost_equal(remaining_travel, 0, 0.05)) {
+    if (almost_equal(remaining_travel, 0, 0.5)) {
         // Close enough to the destination after the next update, swap legs
+        std::cout << "Leg swap" << std::endl;
         for (int i=0; i<6; i++) {
             state[i].grounded = !state[i].grounded;
         }
@@ -34,6 +35,7 @@ void Gait::calculate(const Robot &robot, std::array<LegState, 6> &state, const f
         return;
     }
 
+    // If all legs are grounded we need to reinit
     bool reinit = true;
     for (auto & i : state) {
         if (!i.grounded) {
@@ -41,6 +43,7 @@ void Gait::calculate(const Robot &robot, std::array<LegState, 6> &state, const f
         }
     }
 
+    // Set initial state in case of a reinit
     if (reinit) {
         // These legs remain on the ground
         state[1].grounded = false;
@@ -58,11 +61,16 @@ void Gait::calculate(const Robot &robot, std::array<LegState, 6> &state, const f
 
         float32_t *p_current = state[i].tip_position_in_body_frame.translation;
 
+        // Fixed origin, tip_starting_position is in body frame
         float32_t origin[2] = {robot.leg[i].tip_starting_position[0], robot.leg[i].tip_starting_position[1]};
         float32_t point[2];
         project_point_on_circle(_step_size, origin, movement_vector, point);
 
         float32_t target[3] = {point[0], point[1], robot.leg[i].tip_starting_position[2]};
+
+        std::cout << "Leg " << i << "," << p_current[0] << "," << p_current[1] << "," << p_current[2] << std::endl;
+        std::cout << "Leg " << i << "," << target[0] << "," << target[1] << "," << target[2] << std::endl;
+
 
         calculate_path(p_current, target, _lift_height, _lift_incline_factor, paths[i]);
 
