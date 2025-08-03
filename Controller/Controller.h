@@ -8,36 +8,53 @@
 #include <gz/msgs.hh>
 
 #include "Robot.h"
-#include "motion.h"
 
-enum motion_state {
-    INITIALIZING,
+#define POWERDOWN_TIMEOUT 120 // seconds
+#define CLOSE_BY_THRESHOLD 2 // mm
+
+typedef enum {
+    BOOT,
     SYNCING,
+    STANDUP,
     STANDING,
-    WALKING
+    WALKING,
+    POWERDOWN,
+} state_t;
+
+const std::string leg_names[6] {
+    "fr",
+    "cr",
+    "br",
+    "fl",
+    "cl",
+    "bl"
 };
 
 class Controller {
 public:
-    explicit Controller(Robot robot);
+     Controller();
     ~Controller();
 
-    int init();
-    int run();
+    void init();
+    void run();
     void shutdown();
 
 private:
     void clockCallback(const gz::msgs::Clock &clock);
     void jointStateCallback(const gz::msgs::Model &model);
+    void velocityCallback(const gz::msgs::Double &velocity);
+    void headingCallback(const gz::msgs::Double &heading);
+    void heightCallback(const gz::msgs::Double &heading);
+
+    int read_actual_servo_position(int leg_id, uint8_t servo_count, float32_t *actual_servo_angles);
+    int write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3>& servos, uint8_t servo_count, float32_t *actual_servo_angles);
 
     volatile bool terminate = false;
 
-    Robot _robot;
-    struct pose _hexapod{};
-    struct pose _body{};
-
-    motion_state _motion_state = INITIALIZING;
-    std::array<LegState, 6> _state;
+    robot_state _robot_state{};
+    std::array<std::array<gz::transport::Node::Publisher, 3>, 6> _servo_publishers;
+    state_t _motion_state = BOOT;
+    state_t _next_state = SYNCING;
 
     gz::transport::Node _node;
     std::mutex _node_mutex;
@@ -45,7 +62,13 @@ private:
     std::mutex _tick_mutex;
     std::condition_variable _tick;
 
-    BaseMotion *_base_motion = nullptr;
+    float32_t _velocity = 60;
+    float32_t _next_velocity = 60;
+    float32_t _heading = 0;
+    float32_t _next_heading = 0;
+    float32_t _next_height = 100;
 
     uint64_t _time_us{};
+
+    std::array<std::array<float32_t, 3>, 6> _measured_servo_angles;
 };

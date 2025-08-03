@@ -24,7 +24,7 @@ if (NOT HexapodMath_FOUND)
     FetchContent_Declare(
             HexapodMath
             GIT_REPOSITORY https://github.com/spark404/HexapodMath
-            GIT_TAG e8b53c79cb186cb58f96ad53b70566932db14753
+            GIT_TAG beb4118ac1a2d5be3d803ecce902c02d2327fb02
             OVERRIDE_FIND_PACKAGE
     )
     FetchContent_MakeAvailable(HexapodMath)
@@ -32,9 +32,7 @@ endif ()
 
 add_executable(Controller main.cpp
         Controller.cpp
-        Gait.cpp
-        Standup.cpp
-        ServoTest.cpp
+        calculator.c
 )
 
 target_link_libraries(Controller PRIVATE

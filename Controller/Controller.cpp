@@ -10,106 +10,85 @@
 
 #include <hexapodmath/conversion_2d.h>
 
-#include "Gait.h"
-#include "Standup.h"
+#include "log.h"
+#include "calculator.h"
+#include "hexapodmath/hexapod.h"
 
 int getStringCode(const std::string &input);
 
-Controller::Controller(Robot robot) {
-    _robot = std::move(robot);
+Controller::Controller() {
     _time_us = 0;
 }
 
 Controller::~Controller() = default;
 
-int Controller::init() {
-    pose_set(&_hexapod, 0, 0, 0, 0, 0, 0);
-    pose_set(&_body, 0, 0, 150, 0, 0, 0);
+void Controller::init() {
+
+    typedef enum {
+        BOOT,
+        SYNCING,
+        STANDUP,
+        STANDING,
+        WALKING,
+        POWERDOWN,
+    } state_t;
+
+    // Do a bunch of static calculations that depend on the robot configuration in robot.h
+    pose_set(&_robot_state.hexapod, 0, 0, 0, 0, 0, 0);
+    pose_set(&_robot_state.body, 0, 0, 150, 0, 0, 0);
 
     MATRIX4(Thexapod);
     MATRIX4(Tbody);
+    pose_get_transformation(&_robot_state.hexapod, &Thexapod);
+    pose_get_transformation(&_robot_state.body, &Tbody);
 
-    pose_get_transformation(&_hexapod, &Thexapod);
-    pose_get_transformation(&_body, &Tbody);
+    MATRIX4(Thexapod_body);
+    arm_mat_mult_f32(&Thexapod, &Tbody, &Thexapod_body);
 
-    MATRIX4(T1);
-    arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
+    for (int i = 0; i < 6; i++) {
+        float32_t mount_point_xy[2];
+        const struct leg *current_leg = &r.leg[i];
+        struct leg_state *current_leg_state = &_robot_state.leg_state[i];
 
-    // Prepare leg configurations
-    int i = 0;
-    for (Leg &leg: _robot.leg) {
-        std::cout << "Preparing leg " << leg.name << std::endl;
-        float32_t leg_coordinates[2];
-        convert_2d_polar_to_cartesian(leg.polar_joint_offset, leg_coordinates);
+        arm_mat_init_f32(&current_leg_state->coxa_mat, 4, 4, current_leg_state->coxa_mat_data);
+        arm_mat_init_f32(&current_leg_state->coxa_mat_inv, 4, 4, current_leg_state->coxa_mat_inv_data);
 
-        // Configure the coxa pose in the body frame
-        pose_set(&_state[i].coxa_joint_in_body_frame, leg_coordinates[0], leg_coordinates[1], 0, 0, 0, leg.polar_joint_offset[1]);
-        std::cout << "\t" << "Coxa (body) at (" << leg_coordinates[0] << "," << leg_coordinates[1] << ")"
-                  << std::endl;
+        convert_2d_polar_to_cartesian(current_leg->mount_point_polar, mount_point_xy);
+        pose_set(&current_leg_state->coxa_body_joint,
+                 mount_point_xy[0], mount_point_xy[1], 0.0f,
+                 0.0f, 0.0f, current_leg->mount_point_polar[1]);
 
-        MATRIX4(Tcoxa);
-        pose_get_transformation(&_state[i].coxa_joint_in_body_frame, &Tcoxa);
+        pose_get_transformation(&current_leg_state->coxa_body_joint, &current_leg_state->coxa_mat);
+        matrix_3d_invert(&current_leg_state->coxa_mat, &current_leg_state->coxa_mat_inv);
 
         MATRIX4(T);
-        arm_mat_mult_f32(&T1, &Tcoxa, &T);
+        arm_mat_mult_f32(&Thexapod_body, &current_leg_state->coxa_mat, &T);
 
-        float32_t pos[3];
-        forward_kinematics((float32_t *) leg.tip_starting_angles, pos);
-        matrix_3d_vec_transform(&T, pos, leg.tip_starting_position);
+        float32_t tip_in_coxa[3];
+        forward_kinematics(current_leg->tip_home_angles, tip_in_coxa);
+        matrix_3d_vec_transform(&T, tip_in_coxa, current_leg_state->tip_home);
 
-        // Tip position in world frame
-        pose_set(&_state[i].tip_position_in_world_frame, leg.tip_starting_position[0], leg.tip_starting_position[1],
-                 leg.tip_starting_position[2], 0, 0, 0);
-
-        for (int j = 0; j < 3; j++) {
-            _state[i].joint_angles[j] = leg.tip_starting_angles[j];
-        }
-
-        MATRIX4(Ti);
-        matrix_3d_invert(&Thexapod, &Ti);
-        matrix_3d_vec_transform(&Ti,
-                                _state[i].tip_position_in_world_frame.translation,
-                                _state[i].tip_position_in_body_frame.translation);
-
-        leg.tip_starting_position[0] = _state[i].tip_position_in_body_frame.translation[0];
-        leg.tip_starting_position[1] = _state[i].tip_position_in_body_frame.translation[1];
-        leg.tip_starting_position[2] = _state[i].tip_position_in_body_frame.translation[2];
-
-        std::cout << "\t" << "Tip (world) at ("
-                << _state[i].tip_position_in_world_frame.translation[0] << ","
-                << _state[i].tip_position_in_world_frame.translation[1] << ","
-                << _state[i].tip_position_in_world_frame.translation[2] << ")"
-                << std::endl;
-        std::cout << "\t" << "Tip (body) at ("
-                << _state[i].tip_position_in_body_frame.translation[0] << ","
-                << _state[i].tip_position_in_body_frame.translation[1] << ","
-                << _state[i].tip_position_in_body_frame.translation[2] << ")"
-                << std::endl;
+        current_leg_state->grounded = 1; // All legs assumed to be grounded, STANDUP will take care of that
 
         // Setup the topics
         char buf[100];
         for (int j = 0; j < 3; j++) {
-            int servo = j + 1;
-            snprintf(buf, 99, "/model/hexspider/joint/leg_%s_servo_%d/0/cmd_pos", leg.name.c_str(), servo);
+            const int servo = j + 1;
+            snprintf(buf, 99, "/model/hexspider/joint/leg_%s_servo_%d/0/cmd_pos", leg_names[i].c_str(), servo);
             std::string topic = buf;
             auto p = _node.Advertise<gz::msgs::Double>(topic);
             if (!p) {
                 std::cerr << "Error advertising topic [" << topic << "]" << std::endl;
-                return -1;
             }
-            _state[i].servo_publishers[j] = p;
-            std::cout << "\t" << "Publisher for topic " << buf << std::endl;
+            _servo_publishers[i][j] = p;
+            std::cout << "\t" << "Leg " << i << " Joint " << j << ": " << buf << std::endl;
         }
-
-        i++;
     }
 
     _time_us = 0;
-
-    return 1;
 }
 
-int Controller::run() {
+void Controller::run() {
     using namespace std::chrono_literals;
 
     std::unique_lock<std::mutex> lk(_tick_mutex);
@@ -119,32 +98,44 @@ int Controller::run() {
     std::string joint_state_topic = "/world/hexspider_world/model/hexspider/joint_state";
     if (!(_node.Subscribe(joint_state_topic, &Controller::jointStateCallback, this))) {
         std::cerr << "Failed to subscribe to joint_state topic" << std::endl;
-        return 0;
+        return;
+    }
+
+    std::cout << "Starting listeners for velocity" << std::endl;
+    std::string velocity_topic = "/world/hexspider_world/model/hexspider/velocity";
+    if (!(_node.Subscribe(velocity_topic, &Controller::velocityCallback, this))) {
+        std::cerr << "Failed to subscribe to velocity topic" << std::endl;
+        return;
+    }
+
+    std::cout << "Starting listeners for heading" << std::endl;
+    std::string heading_topic = "/world/hexspider_world/model/hexspider/heading";
+    if (!(_node.Subscribe(heading_topic, &Controller::headingCallback, this))) {
+        std::cerr << "Failed to subscribe to heading topic" << std::endl;
+        return;
+    }
+
+    std::cout << "Starting listeners for height" << std::endl;
+    std::string height_topic = "/world/hexspider_world/model/hexspider/height";
+    if (!(_node.Subscribe(height_topic, &Controller::heightCallback, this))) {
+        std::cerr << "Failed to subscribe to height topic" << std::endl;
+        return;
     }
 
     std::cout << "Starting main loop using world clock ticks" << std::endl;
     std::string clock_topic = "/world/hexspider_world/clock";
     if (!(_node.Subscribe(clock_topic, &Controller::clockCallback, this))) {
         std::cerr << "Failed to subscribe to clock topic" << std::endl;
-        return 0;
+        return;
     }
 
-    pose_set(&_hexapod, 0, 0, 0, 0, 0, 0);
-    pose_set(&_body, 0, 0, 100, 0, 0, 0);
+    MATRIX4(Thexapod);
+    MATRIX4(Tbody);
+    MATRIX4(Thexapod_body);
 
-    float32_t velocity = 40; // mm/s
-    float32_t heading = 0;
+    uint16_t powerdown_timeout = POWERDOWN_TIMEOUT;
 
-    Gait gait_controller{};
-    gait_controller.init();
-
-    Standup standup_controller{};
-    standup_controller.init();
-
-    uint32_t count = 0;
-
-    float32_t delta_angle[3]{};
-
+    /* Infinite loop */
     while (!terminate) {
         // Wait for a sync pulse from gazebo on the clock topic
         auto status = _tick.wait_for(lk, std::chrono::seconds(2));
@@ -158,156 +149,330 @@ int Controller::run() {
             break;
         }
 
-        uint64_t delta_t = _time_us - last_time_us;
-        if (delta_t < 10000) {
+        uint64_t delta_t_us = _time_us - last_time_us;
+        if (delta_t_us < 10000) {
             continue;
         }
         last_time_us = _time_us;
+        float32_t delta_t_s = (float32_t)delta_t_us / 1000000;
 
-        if (delta_t > 1000000) {
-            continue;
+        // Update from the callback
+        _velocity = _next_velocity;
+        _heading = _next_heading;
+        if (_motion_state == WALKING || _motion_state == STANDING) {
+            if (_next_height != _robot_state.body.translation[2]) {
+                _robot_state.body.translation[2] = _next_height; // Mirrors the height set in the target
+                pose_get_transformation(&_robot_state.hexapod, &Thexapod);
+                pose_get_transformation(&_robot_state.body, &Tbody);
+                arm_mat_mult_f32(&Thexapod, &Tbody, &Thexapod_body);
+            }
         }
 
-        if (_motion_state == INITIALIZING) {
-            if (_state[0].actual_joint_angles[0] == 0.0f &&
-            _state[0].actual_joint_angles[1] == 0.0f &&
-            _state[0].actual_joint_angles[2] == 0.0f) {
-                // no joint state update yet
+        // Rules for transitions
+        if (_motion_state == STANDING) {
+            if (powerdown_timeout == 0) {
+                _next_state = POWERDOWN;
+            } else {
+                powerdown_timeout--;
+            }
+        } else {
+            powerdown_timeout = POWERDOWN_TIMEOUT;
+        }
+        if (_motion_state == POWERDOWN && _velocity > 0.0f) {
+            _next_state = SYNCING;
+        }
+        if (_motion_state == STANDING && _velocity > 0.0f) {
+            _next_state = WALKING;
+        }
+        if (_motion_state == WALKING && _velocity == 0.0f) {
+            _next_state = STANDING;
+        }
+
+        // State machine
+        if (_motion_state != _next_state) {
+            LOG_INFO("Transitioning to motion state %d", _next_state);
+            switch (_next_state) {
+                case SYNCING:
+                    for (int i = 0; i < 3 * 6; i++) {
+                        LOG_INFO("Activating servo %d...", i);
+                    }
+                    break;
+                case POWERDOWN:
+                    for (int i = 0; i < 3 * 6; i++) {
+                        LOG_INFO("Deactivating servo %d...", i);
+                    }
+                    break;
+                case STANDUP:
+                    break;
+                case STANDING:
+                    break;
+                case WALKING:
+                    break;
+                default:
+                    break;
+            }
+            _motion_state = _next_state;
+        }
+
+        // Determine the actual servo positions
+        for (int i = 0; i < 6; i++) {
+            struct leg_state *current_leg_state = &_robot_state.leg_state[i];
+            const struct leg *current_leg = &r.leg[i];
+
+            std::array<gz::transport::Node::Publisher, 3> leg_servos = {
+                _servo_publishers[i][0],
+                _servo_publishers[i][1],
+                _servo_publishers[i][2],
+            };
+            float32_t measured_leg_servo_angles[3];
+
+            if (read_actual_servo_position(i, 3, measured_leg_servo_angles) < 0) {
+                // LOG_WARN("Failed to read servo position for leg %d\r\n", i);
+                // Use the defined angles as a stop gap
+                // FIXME, these angles are uncompensated
+                arm_vec_copy_f32(_robot_state.leg_state[i].next_joint_angles,
+                                 _robot_state.leg_state[i].actual_joint_angles, 3);
                 continue;
             }
 
-            _motion_state = SYNCING;
+            // Compensate angles for geometry
+            if (_motion_state == SYNCING) {
+                // We exclusive use the measured position
+                current_leg_state->actual_joint_angles[0] = measured_leg_servo_angles[0];
+                current_leg_state->actual_joint_angles[1] = -measured_leg_servo_angles[1];
+                current_leg_state->actual_joint_angles[2] = measured_leg_servo_angles[2] + D2R(25);
+            } else {
+                // We use a mix of the calculated angle and the measured angle to offset any measurement error
+                // and compensate for a bit of deadzone at low speeds
+                // Use alpha to tune the mix
+                float32_t compensated_angles[3] = {
+                    measured_leg_servo_angles[0],
+                    -measured_leg_servo_angles[1],
+                    measured_leg_servo_angles[2] + static_cast<float32_t>(D2R(25))
+                };
+                const float32_t alpha = 1.f;
+                current_leg_state->actual_joint_angles[0] = compensated_angles[0] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[0];
+                current_leg_state->actual_joint_angles[1] = compensated_angles[1] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[1];
+                current_leg_state->actual_joint_angles[2] = compensated_angles[2] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[2];
+            }
         }
 
         if (_motion_state == SYNCING) {
-            int sync_done = 1;
-            for (int i=0; i<6; i++) {
-                arm_vec_sub_f32(_state[i].actual_joint_angles, _state[i].joint_angles, delta_angle, 3);
-                if (fabs(delta_angle[0]) > 0.02 || fabs(delta_angle[1]) > 0.02 || fabs(delta_angle[2]) > 0.02) {
-                    sync_done = 0;
-                }
-            }
-
-            if (sync_done) {
-                _motion_state = STANDING;
-                _base_motion = &standup_controller;
-                // _motion_state = WALKING;
-                // _base_motion = &gait_controller;
-            } else {
-                for (int i=0; i<6; i++) {
-                    arm_vec_copy_f32(_state[i].actual_joint_angles, _state[i].joint_angles, 3);
-                }
-            }
-        }
-
-        if (count == 1200) {
-            _motion_state = WALKING;
-            _base_motion = &gait_controller;
-        }
-
-        float32_t movement_vector[3];
-        if (_motion_state == WALKING) {
-            float32_t motion_vector[3] = { velocity * cos(heading), velocity * sin(heading), 0};
-            arm_vec_mult_scalar_f32(motion_vector, (float32_t)delta_t / 1000000, movement_vector, 3);
-        } else {
-            movement_vector[0] = 0.0;
-            movement_vector[1] = 0.0;
-            movement_vector[2] = 0.0;
-        }
-
-        // Update the projected location of the hexapod in the world
-        // this is the basis for where we should end up with the current
-        // movement.
-        _hexapod.translation[0] += movement_vector[0];
-        _hexapod.translation[1] += movement_vector[1];
-
-
-        MATRIX4(Thexapod);
-        pose_get_transformation(&_hexapod, &Thexapod);
-
-        MATRIX4(Tbody);
-        pose_get_transformation(&_body, &Tbody);
-
-        MATRIX4(Thexapod_to_body);
-        matrix_3d_invert(&Thexapod, &Thexapod_to_body);
-
-        MATRIX4(T1);
-        arm_mat_mult_f32(&Thexapod, &Tbody, &T1);
-
-        // Calculate the targets for the current cycle
-        std::cout << count++ << "," << _state[1].joint_angles[0] - _state[1].actual_joint_angles[0] << "," <<
-            _state[1].joint_angles[1] - _state[1].actual_joint_angles[1] << "," <<
-                _state[1].joint_angles[2] - _state[1].actual_joint_angles[2] << "," << _motion_state << std::endl;
-
-        if (_motion_state == STANDING || _motion_state == WALKING) {
-            // The actual joint angles are unreliable, so use the target position from the
-            // previous step as the current position
-            for (int i=0; i<6; i++) {
-                arm_vec_copy_f32(_state[i].joint_angles, _state[i].actual_joint_angles, 3);
-            }
-
-            _base_motion->calculate(_robot, _state, movement_vector, (float32_t)delta_t / 1000000);
-        }
-
-        if (_motion_state == WALKING) {
-            // Calculate the servo angles and publish
+            // Make sure actual and next angles are set to the same value
             for (int i = 0; i < 6; i++) {
-                MATRIX4(Tcoxa);
-                pose_get_transformation(&_state[i].coxa_joint_in_body_frame, &Tcoxa);
+                arm_vec_copy_f32(_robot_state.leg_state[i].actual_joint_angles,
+                                 _robot_state.leg_state[i].next_joint_angles, 3);
+            }
+            _next_state = STANDUP;
+        } else if (_motion_state == STANDUP) {
+            int ready = 1;
+            motion_param_t motion_param = {50.0f, 20.0f, 50.0f};
+            // Perform the standup routine, follows on SYNCING
+            for (int i = 0; i < 6; i++) {
+                struct leg_state *current_leg_state = &_robot_state.leg_state[i];
+
+                // Target position of each leg after standup
+                float32_t p_target_in_body_frame[3] = {
+                    current_leg_state->tip_home[0],
+                    current_leg_state->tip_home[1],
+                    -100
+                };
+
+                float32_t p_current_in_coxa_frame[3];
+                float32_t p_current_in_body_frame[3];
+                forward_kinematics(current_leg_state->actual_joint_angles, p_current_in_coxa_frame);
+                matrix_3d_vec_transform(&current_leg_state->coxa_mat, p_current_in_coxa_frame, p_current_in_body_frame);
+
+                float32_t p_next_in_body_frame[3];
+                float32_t p_next_in_coxa_frame[3];
+                float32_t distance_remaining;
+                calculate_motion_step(&motion_param, p_current_in_body_frame, p_target_in_body_frame,
+                                      delta_t_s,
+                                      p_next_in_body_frame, &distance_remaining);
+
+                float32_t origin[3] = {0.0f, 0.0f, 0.0f};
+                matrix_3d_vec_transform(&current_leg_state->coxa_mat_inv, p_next_in_body_frame, p_next_in_coxa_frame);
+                inverse_kinematics(origin, p_next_in_coxa_frame, current_leg_state->next_joint_angles);
+
+                if (distance_remaining > CLOSE_BY_THRESHOLD) {
+                    ready = 0;
+                };
+            }
+
+            if (ready) {
+                _robot_state.body.translation[2] = 100; // Mirrors the height set in the target
+                pose_get_transformation(&_robot_state.hexapod, &Thexapod);
+                pose_get_transformation(&_robot_state.body, &Tbody);
+                arm_mat_mult_f32(&Thexapod, &Tbody, &Thexapod_body);
+
+                _next_state = STANDING;
+            }
+        } else if (_motion_state == WALKING) {
+            // Reinitialize the gait when all legs are on the ground at the same time
+            uint8_t re_init = 1;
+            for (int i = 0; i < 6; i++) {
+                if (!_robot_state.leg_state[i].grounded) {
+                    re_init = 0;
+                }
+            }
+
+            if (re_init) {
+                LOG_INFO("(Re)Initializing tripod gait");
+                _robot_state.leg_state[1].grounded = 0;
+                _robot_state.leg_state[3].grounded = 0;
+                _robot_state.leg_state[5].grounded = 0;
+
+                // Use the actual angles to determine the current world coordinates of the tip
+                for (int i = 0; i < 6; i++) {
+                    struct leg_state *current_leg_state = &_robot_state.leg_state[i];
+
+                    MATRIX4(T);
+                    arm_mat_mult_f32(&Thexapod_body, &current_leg_state->coxa_mat, &T);
+
+                    float32_t tip_in_coxa[3];
+                    forward_kinematics(current_leg_state->actual_joint_angles, tip_in_coxa);
+                    matrix_3d_vec_transform(&T, tip_in_coxa, current_leg_state->tip_world_coordinates);
+                }
+            }
+
+            // Determine the movement
+            float32_t motion_vector[3] = {_velocity * arm_cos_f32(_heading), _velocity * arm_sin_f32(_heading), 0};
+            float32_t movement_vector[3];
+            arm_vec_mult_scalar_f32(motion_vector, delta_t_s, movement_vector, 3);
+
+            // Move the hexapod in the world
+            _robot_state.hexapod.translation[0] += movement_vector[0];
+            _robot_state.hexapod.translation[1] += movement_vector[1];
+
+            // Update the translations so they are performed with respect to the new location
+            pose_get_transformation(&_robot_state.hexapod, &Thexapod);
+            pose_get_transformation(&_robot_state.body, &Tbody);
+
+            arm_mat_mult_f32(&Thexapod, &Tbody, &Thexapod_body);
+
+            float32_t longest_path = 0.f;
+            float32_t remaining_path_length = 0.f;
+            float32_t paths[6][4][3];
+            for (int i = 0; i < 6; i++) {
+                struct leg_state *current_leg_state = &_robot_state.leg_state[i];
+
+                float32_t step_size = 40;
+                float32_t origin[2] = {current_leg_state->tip_home[0], current_leg_state->tip_home[1]};
+
+                float32_t p_current_in_body_frame[3];
+                float32_t tip_in_coxa[3];
+                forward_kinematics(current_leg_state->actual_joint_angles, tip_in_coxa);
+                matrix_3d_vec_transform(&current_leg_state->coxa_mat, tip_in_coxa, p_current_in_body_frame);
+
+                if (current_leg_state->grounded) {
+                    float32_t movement_vector_grounded[3];
+                    arm_vec_mult_scalar_f32(movement_vector, -1, movement_vector_grounded, 3);
+
+                    float32_t point[2];
+                    project_point_on_circle(step_size, origin, movement_vector_grounded, point);
+                    float32_t p_target_in_body_frame[3] = {point[0], point[1], _robot_state.body.translation[2] * -1};
+
+                    arm_vec_copy_f32(p_current_in_body_frame, paths[i][0], 3);
+                    arm_vec_copy_f32(p_current_in_body_frame, paths[i][1], 3);
+                    arm_vec_copy_f32(p_current_in_body_frame, paths[i][2], 3);
+                    arm_vec_copy_f32(p_target_in_body_frame, paths[i][3], 3);
+
+                    float32_t path_length = arm_euclidean_distance_f32(p_current_in_body_frame, p_target_in_body_frame,
+                                                                       3);
+
+                    longest_path = fmaxf(path_length, longest_path);
+                } else {
+                    float32_t point[2];
+                    project_point_on_circle(step_size, origin, movement_vector, point);
+                    float32_t p_target_in_body_frame[3] = {point[0], point[1], _robot_state.body.translation[2] * -1};
+
+                    calculate_path(p_current_in_body_frame, p_target_in_body_frame, 25, 2.0f, paths[i]);
+                }
+            }
+
+            for (int i = 0; i < 6; i++) {
+                struct leg_state *current_leg_state = &_robot_state.leg_state[i];
 
                 MATRIX4(T);
-                arm_mat_mult_f32(&T1, &Tcoxa, &T);
+                arm_mat_mult_f32(&Thexapod_body, &current_leg_state->coxa_mat, &T);
+                MATRIX4(Tinv);
+                matrix_3d_invert(&T, &Tinv);
 
-                MATRIX4(Ti);
-                matrix_3d_invert(&T, &Ti);
+                float32_t movement_velocity = arm_vec_magnitude_f32(movement_vector, 3);
+                float32_t substeps = longest_path / movement_velocity;
 
-                float32_t *tip_in_world = _state[i].tip_position_in_world_frame.translation;
-                float32_t *tip_in_body = _state[i].tip_position_in_body_frame.translation;
+                float32_t path_length = calculate_path_length(paths[i]);
+                float32_t step_length = path_length / substeps;
 
-                if (!_state[i].grounded) {
-                    // We have a new position in the body frame, calculate the position in the
-                    // updated world frame
-                    matrix_3d_vec_transform(&Thexapod, _state[i].tip_interpolated_target, tip_in_world);
-                    arm_vec_copy_f32(_state[i].tip_interpolated_target,
-                                     _state[i].tip_position_in_body_frame.translation, 3);
+                float32_t delta[3] = {0.0f, 0.0f, 0.0f};
+                interpolate(paths[i], step_length, delta);
+
+                float32_t p_next_in_body_frame[3];
+                arm_vec_copy_f32(delta, p_next_in_body_frame, 3);
+
+                float32_t p_next_in_world_frame[3];
+                matrix_3d_vec_transform(&Thexapod_body, p_next_in_body_frame, p_next_in_world_frame);
+
+                if (current_leg_state->grounded) {
+                    // Use the existing coordinates for the world frame
+                    arm_vec_copy_f32(current_leg_state->tip_world_coordinates, p_next_in_world_frame, 3);
                 } else {
-                    // Recalculate the tip position in body frame
-                    matrix_3d_vec_transform(&Thexapod_to_body, tip_in_world, tip_in_body);
+                    remaining_path_length = fmaxf(remaining_path_length,
+                                                  arm_euclidean_distance_f32(p_next_in_body_frame, paths[i][3], 3));
+                    arm_vec_copy_f32(p_next_in_world_frame, current_leg_state->tip_world_coordinates, 3);
                 }
 
-                float32_t tip_in_coxa[3];
-                matrix_3d_vec_transform(&Ti, tip_in_world, tip_in_coxa);
+                float32_t p_next_in_coxa_frame[3];
+                matrix_3d_vec_transform(&Tinv, p_next_in_world_frame, p_next_in_coxa_frame);
 
                 float32_t origin[3] = {0, 0, 0};
-                float32_t angles[3];
-                inverse_kinematics(origin, tip_in_coxa, angles);
-
-                _state[i].joint_angles[0] = angles[0];
-                _state[i].joint_angles[1] = angles[1];
-                _state[i].joint_angles[2] = angles[2];
+                inverse_kinematics(origin, p_next_in_coxa_frame, _robot_state.leg_state[i].next_joint_angles);
             }
-        }
 
-        // Update the legs
-        if (_motion_state != INITIALIZING) {
-            for (auto &s: _state) {
-                for (int j = 0; j < 3; j++) {
-                    s.prev_joint_angles[j] = s.actual_joint_angles[j];
-                    double angle = s.joint_angles[j];
-                    if (j == 2) {
-                        angle -= D2R(55);
-                    }
-                    gz::msgs::Double msg;
-                    msg.set_data(angle);
-
-                    s.servo_publishers[j].Publish(msg);
+            printf("Remaining: %5.2f, Longest: %5.2f\n", remaining_path_length, longest_path);
+            if (remaining_path_length < CLOSE_BY_THRESHOLD) {
+                LOG_DEBUG("Swap");
+                for (int i = 0; i < 6; i++) {
+                    struct leg_state *current_leg_state = &_robot_state.leg_state[i];
+                    current_leg_state->grounded = !current_leg_state->grounded;
                 }
             }
         }
 
-        // Process any updates needed for the next cycle
-        if (_motion_state == STANDING || _motion_state == WALKING) {
-            _base_motion->update(_state);
+        // Write next values to the servos
+        for (int i = 0; i < 6; i++) {
+            struct leg_state *current_leg_state = &_robot_state.leg_state[i];
+            const struct leg *current_leg = &r.leg[i];
+
+            std::array<gz::transport::Node::Publisher, 3> leg_servos = {
+                _servo_publishers[i][0],
+                _servo_publishers[i][1],
+                _servo_publishers[i][2],
+            };
+            float32_t leg_servo_angles[3];
+
+            // Compensate angles for geometry
+            leg_servo_angles[0] = current_leg_state->next_joint_angles[0];
+            leg_servo_angles[1] = -current_leg_state->next_joint_angles[1];
+            leg_servo_angles[2] = current_leg_state->next_joint_angles[2] - D2R(25);
+
+            uint8_t limit_alert = 0;
+            for (int axis = 0; axis < 3; axis++) {
+                if (leg_servo_angles[axis] < current_leg->limits[axis][0] || leg_servo_angles[axis] > current_leg->limits[axis][1]) {
+                    LOG_ERROR("Limit alert triggered, leg %d, axis %d", i, axis);
+                    LOG_ERROR("Calculated value %5.2f, limits %5.2f, %5.2f", leg_servo_angles[axis], current_leg->limits[axis][0], current_leg->limits[axis][1]);
+                    limit_alert = 1;
+                }
+            }
+
+            if (limit_alert && _motion_state == WALKING) {
+                _next_velocity = 0.0f;
+                _next_heading = 0.0f;
+                _next_state = POWERDOWN;
+                continue;
+            }
+
+            this->write_next_servo_position(leg_servos, 3, leg_servo_angles);
         }
     }
 
@@ -323,8 +488,6 @@ int Controller::run() {
     }
 
     std::this_thread::sleep_for(2000ms);
-
-    return 1;
 }
 
 void Controller::shutdown() {
@@ -376,16 +539,52 @@ void Controller::jointStateCallback(const gz::msgs::Model &model) {
 
             auto v = (float32_t) joint.axis1().position();
             auto joint_id = joint_index - 1;
-            if (joint_id == 2) {
-                v += D2R(55);
-            }
 
-            this->_state[leg_index].actual_joint_angles[joint_id] = v;
+            this->_measured_servo_angles[i][joint_id] = v;
         }
     }
 }
 
+void Controller::velocityCallback(const gz::msgs::Double &velocity) {
+    printf("Setting velocity to %5.2f\n", velocity.data());
+    _next_velocity = velocity.data();
+}
 
+void Controller::headingCallback(const gz::msgs::Double &heading) {
+    printf("Setting heading to %5.2f\n", heading.data());
+    _next_heading = heading.data();
+}
+
+void Controller::heightCallback(const gz::msgs::Double &height) {
+    printf("Setting height to %5.2f\n", height.data());
+    _next_height = height.data();
+}
+
+int Controller::read_actual_servo_position(const int leg_id, uint8_t servo_count, float32_t *actual_servo_angles) {
+    for (int i = 0; i < servo_count; i++) {
+        float32_t angle = _measured_servo_angles[leg_id][i];
+        if (i == 1) {
+            angle = -angle;
+        }
+        actual_servo_angles[i] = angle;
+    }
+    return 0;
+}
+
+
+int Controller::write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3>& servos, uint8_t servo_count, float32_t *actual_servo_angles) {
+    for (int i = 0; i < servo_count; i++) {
+        float32_t angle = actual_servo_angles[i];
+        if (i == 1) {
+            angle = -angle;
+        }
+        gz::msgs::Double msg;
+        msg.set_data(angle);
+        auto p = servos[i];
+        p.Publish(msg);
+    }
+    return 0;
+}
 
 
 int getStringCode(const std::string &input) {

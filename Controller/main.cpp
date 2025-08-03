@@ -5,11 +5,7 @@
 #include "Controller.h"
 #include "Robot.h"
 #include "ServoTest.h"
-#include "Standup.h"
-#include "hexapodmath/conversion_2d.h"
-#include "hexapodmath/forward_kinematics.h"
-#include "hexapodmath/inverse_kinematics.h"
-#include "hexapodmath/matrix_3d.h"
+#include "log.h"
 
 std::mutex terminate;
 std::condition_variable terminate_lock;
@@ -19,6 +15,8 @@ int createModel();
 int removeModel();
 int pauze(bool pause);
 int follow();
+
+int _g_log_level = LOG_LEVEL_DEBUG;
 
 void SignalHandler(int nSignalNumber)
 {
@@ -52,12 +50,8 @@ int main() {
         return 1;
     }
 
-    auto *instance = new Controller(r);
-    //auto *instance = new ServoTest();
-    if (!instance->init()) {
-        std::cerr << "Init failed" << std::endl;
-        return 1;
-    }
+    auto *instance = new Controller();
+    instance->init();
 
     std::thread t1(&Controller::run, instance);
 
