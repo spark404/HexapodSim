@@ -2,7 +2,7 @@
 #include <thread>
 #include <csignal>
 
-#include "Controller.h"
+#include "HexapodController.h"
 #include "Robot.h"
 #include "ServoTest.h"
 #include "log.h"
@@ -52,10 +52,10 @@ int main() {
         return 1;
     }
 */
-    auto *instance = new Controller();
+    auto *instance = new HexapodController();
     instance->init();
 
-    std::thread t1(&Controller::run, instance);
+    std::thread t1(&HexapodController::run, instance);
 
     terminate_lock.wait(lk);
     instance->shutdown();

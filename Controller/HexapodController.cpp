@@ -2,7 +2,7 @@
 // Created by Hugo Trippaers on 09/07/2024.
 //
 
-#include "Controller.h"
+#include "HexapodController.h"
 
 #include "hexapodmath/inverse_kinematics.h"
 #include "hexapodmath/forward_kinematics.h"
@@ -31,13 +31,13 @@ static inline float wrap_to_pi(float angle)
     return angle - M_PI;
 }
 
-Controller::Controller() {
+HexapodController::HexapodController() {
     _time_us = 0;
 }
 
-Controller::~Controller() = default;
+HexapodController::~HexapodController() = default;
 
-void Controller::init() {
+void HexapodController::init() {
     typedef enum {
         BOOT,
         SYNCING,
@@ -102,7 +102,7 @@ void Controller::init() {
     _time_us = 0;
 }
 
-void Controller::run() {
+void HexapodController::run() {
     using namespace std::chrono_literals;
 
     std::unique_lock<std::mutex> lk(_tick_mutex);
@@ -110,35 +110,35 @@ void Controller::run() {
 
     std::cout << "Starting listeners for joint state" << std::endl;
     std::string joint_state_topic = "/world/hexspider_world/model/hexspider/joint_state";
-    if (!(_node.Subscribe(joint_state_topic, &Controller::jointStateCallback, this))) {
+    if (!(_node.Subscribe(joint_state_topic, &HexapodController::jointStateCallback, this))) {
         std::cerr << "Failed to subscribe to joint_state topic" << std::endl;
         return;
     }
 
     std::cout << "Starting listeners for velocity" << std::endl;
     std::string velocity_topic = "/world/hexspider_world/model/hexspider/velocity";
-    if (!(_node.Subscribe(velocity_topic, &Controller::velocityCallback, this))) {
+    if (!(_node.Subscribe(velocity_topic, &HexapodController::velocityCallback, this))) {
         std::cerr << "Failed to subscribe to velocity topic" << std::endl;
         return;
     }
 
     std::cout << "Starting listeners for heading" << std::endl;
     std::string heading_topic = "/world/hexspider_world/model/hexspider/heading";
-    if (!(_node.Subscribe(heading_topic, &Controller::headingCallback, this))) {
+    if (!(_node.Subscribe(heading_topic, &HexapodController::headingCallback, this))) {
         std::cerr << "Failed to subscribe to heading topic" << std::endl;
         return;
     }
 
     std::cout << "Starting listeners for height" << std::endl;
     std::string height_topic = "/world/hexspider_world/model/hexspider/height";
-    if (!(_node.Subscribe(height_topic, &Controller::heightCallback, this))) {
+    if (!(_node.Subscribe(height_topic, &HexapodController::heightCallback, this))) {
         std::cerr << "Failed to subscribe to height topic" << std::endl;
         return;
     }
 
     std::cout << "Starting main loop using world clock ticks" << std::endl;
     std::string clock_topic = "/world/hexspider_world/clock";
-    if (!(_node.Subscribe(clock_topic, &Controller::clockCallback, this))) {
+    if (!(_node.Subscribe(clock_topic, &HexapodController::clockCallback, this))) {
         std::cerr << "Failed to subscribe to clock topic" << std::endl;
         return;
     }
@@ -610,14 +610,14 @@ void Controller::run() {
     std::this_thread::sleep_for(2000ms);
 }
 
-void Controller::shutdown() {
+void HexapodController::shutdown() {
     terminate = true;
     _tick.notify_one();
 }
 
 int ticker = 0;
 
-void Controller::clockCallback(const gz::msgs::Clock &clock) {
+void HexapodController::clockCallback(const gz::msgs::Clock &clock) {
     const uint64_t time_us = (clock.sim().sec() * 1000000) + (clock.sim().nsec() / 1000);
     if (time_us <= _time_us) {
         return;
@@ -632,7 +632,7 @@ void Controller::clockCallback(const gz::msgs::Clock &clock) {
     }
 }
 
-void Controller::jointStateCallback(const gz::msgs::Model &model) {
+void HexapodController::jointStateCallback(const gz::msgs::Model &model) {
     for (int i = 0; i < model.joint_size(); i++) {
         const auto &joint = model.joint(i);
         const auto &str = joint.name();
@@ -666,22 +666,22 @@ void Controller::jointStateCallback(const gz::msgs::Model &model) {
     }
 }
 
-void Controller::velocityCallback(const gz::msgs::Double &velocity) {
+void HexapodController::velocityCallback(const gz::msgs::Double &velocity) {
     printf("Setting velocity to %5.2f\n", velocity.data());
     _cmd_velocity = velocity.data();
 }
 
-void Controller::headingCallback(const gz::msgs::Double &heading) {
+void HexapodController::headingCallback(const gz::msgs::Double &heading) {
     printf("Setting heading to %5.2f\n", heading.data());
     _cmd_heading = heading.data();
 }
 
-void Controller::heightCallback(const gz::msgs::Double &height) {
+void HexapodController::heightCallback(const gz::msgs::Double &height) {
     printf("Setting height to %5.2f\n", height.data());
     _cmd_height = height.data();
 }
 
-int Controller::read_actual_servo_position(const int leg_id, uint8_t servo_count, float32_t *actual_servo_angles) {
+int HexapodController::read_actual_servo_position(const int leg_id, uint8_t servo_count, float32_t *actual_servo_angles) {
     for (int i = 0; i < servo_count; i++) {
         float32_t angle = _measured_servo_angles[leg_id][i];
         if (i == 1) {
@@ -693,7 +693,7 @@ int Controller::read_actual_servo_position(const int leg_id, uint8_t servo_count
 }
 
 
-int Controller::write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3> &servos,
+int HexapodController::write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3> &servos,
                                           uint8_t servo_count, float32_t *actual_servo_angles) {
     for (int i = 0; i < servo_count; i++) {
         float32_t angle = actual_servo_angles[i];

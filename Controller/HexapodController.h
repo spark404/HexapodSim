@@ -12,6 +12,7 @@
 #define POWERDOWN_TIMEOUT 120 // seconds
 #define CLOSE_BY_THRESHOLD 2 // mm
 
+
 typedef enum {
     BOOT,
     SYNCING,
@@ -30,10 +31,10 @@ const std::string leg_names[6] {
     "bl"
 };
 
-class Controller {
+class HexapodController {
 public:
-     Controller();
-    ~Controller();
+     HexapodController();
+    ~HexapodController();
 
     void init();
     void run();

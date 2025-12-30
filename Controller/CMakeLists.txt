@@ -31,7 +31,7 @@ if (NOT HexapodMath_FOUND)
 endif ()
 
 add_executable(Controller main.cpp
-        Controller.cpp
+        HexapodController.cpp
         calculator.c
 )
 
