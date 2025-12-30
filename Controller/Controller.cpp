@@ -150,7 +150,6 @@ void Controller::run() {
     uint16_t powerdown_timeout = POWERDOWN_TIMEOUT;
 
     float32_t orientation_error = 0;
-    float32_t orientation_delta = 0;
     float32_t rotation_velocity = 0.1; // radians/second, best between 0.3 and 1.0 while moving
     float32_t rotation_step = 0;
 
@@ -176,17 +175,15 @@ void Controller::run() {
         float32_t delta_t_s = (float32_t) delta_t_us / 1000000;
 
         // Update from the callback
-        _velocity = _next_velocity;
-        //_heading = _next_heading;
-        _next_orientation = _next_heading;
+        _velocity = _cmd_velocity;
         _orientation = _robot_state.hexapod.rotation[2];
-        float32_t effective_heading = _robot_state.hexapod.rotation[2] + _heading;
+        float32_t effective_heading = _robot_state.hexapod.rotation[2];
 
-        orientation_error = wrap_to_pi(_next_orientation - _orientation);
+        orientation_error = wrap_to_pi(_cmd_heading - _orientation);
 
         if (_motion_state == WALKING || _motion_state == STANDING) {
-            if (_next_height != _robot_state.body.translation[2]) {
-                _robot_state.body.translation[2] = _next_height; // Mirrors the height set in the target
+            if (_cmd_height != _robot_state.body.translation[2]) {
+                _robot_state.body.translation[2] = _cmd_height; // Mirrors the height set in the target
                 pose_get_transformation(&_robot_state.hexapod, &Thexapod);
                 pose_get_transformation(&_robot_state.body, &Tbody);
                 arm_mat_mult_f32(&Thexapod, &Tbody, &Thexapod_body);
@@ -370,8 +367,9 @@ void Controller::run() {
             }
 
             // Determine the movement
-            float32_t max_rotation_step = rotation_velocity * delta_t_s;
-            rotation_step = clamp(orientation_error, -max_rotation_step, +max_rotation_step);
+            float32_t desired_omega = orientation_error / delta_t_s;
+            desired_omega = clamp(desired_omega, -rotation_velocity, +rotation_velocity);
+            rotation_step = desired_omega * delta_t_s;
 
             // 1) World-frame desired motion (commanded)
             float32_t v_world[2] = {
@@ -588,8 +586,8 @@ void Controller::run() {
             }
 
             if (limit_alert && _motion_state == WALKING) {
-                _next_velocity = 0.0f;
-                _next_heading = 0.0f;
+                _cmd_velocity = 0.0f;
+                _cmd_heading = 0.0f;
                 _next_state = POWERDOWN;
                 continue;
             }
@@ -670,17 +668,17 @@ void Controller::jointStateCallback(const gz::msgs::Model &model) {
 
 void Controller::velocityCallback(const gz::msgs::Double &velocity) {
     printf("Setting velocity to %5.2f\n", velocity.data());
-    _next_velocity = velocity.data();
+    _cmd_velocity = velocity.data();
 }
 
 void Controller::headingCallback(const gz::msgs::Double &heading) {
     printf("Setting heading to %5.2f\n", heading.data());
-    _next_heading = heading.data();
+    _cmd_heading = heading.data();
 }
 
 void Controller::heightCallback(const gz::msgs::Double &height) {
     printf("Setting height to %5.2f\n", height.data());
-    _next_height = height.data();
+    _cmd_height = height.data();
 }
 
 int Controller::read_actual_servo_position(const int leg_id, uint8_t servo_count, float32_t *actual_servo_angles) {

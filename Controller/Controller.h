@@ -62,13 +62,12 @@ private:
     std::mutex _tick_mutex;
     std::condition_variable _tick;
 
+    float32_t _cmd_velocity = 60;
+    float32_t _cmd_heading = 0;
+    float32_t _cmd_height = 100;
+
     float32_t _velocity = 60;
-    float32_t _next_velocity = 60;
-    float32_t _heading = 0;
-    float32_t _next_heading = 0;
-    float32_t _next_height = 100;
     float32_t _orientation = 0;
-    float32_t _next_orientation = M_PI_2;
 
     uint64_t _time_us{};
 
