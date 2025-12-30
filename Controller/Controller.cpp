@@ -177,8 +177,10 @@ void Controller::run() {
 
         // Update from the callback
         _velocity = _next_velocity;
-        _heading = _next_heading;
+        //_heading = _next_heading;
+        _next_orientation = _next_heading;
         _orientation = _robot_state.hexapod.rotation[2];
+        float32_t effective_heading = _robot_state.hexapod.rotation[2] + _heading;
 
         orientation_error = wrap_to_pi(_next_orientation - _orientation);
 
@@ -191,6 +193,9 @@ void Controller::run() {
             }
         }
 
+        bool wants_translation = fabsf(_velocity) > 1e-3f;
+        bool wants_rotation    = fabsf(orientation_error) > 1e-3f;
+
         // Rules for transitions
         if (_motion_state == STANDING) {
             if (powerdown_timeout == 0) {
@@ -201,13 +206,16 @@ void Controller::run() {
         } else {
             powerdown_timeout = POWERDOWN_TIMEOUT;
         }
-        if (_motion_state == POWERDOWN && _velocity > 0.0f) {
+        if (_motion_state == POWERDOWN && (wants_translation || wants_rotation)) {
             _next_state = SYNCING;
         }
-        if (_motion_state == STANDING && _velocity > 0.0f) {
+        // Enter walking if either translation OR rotation is requested
+        if (_motion_state == STANDING && (wants_translation || wants_rotation)) {
             _next_state = WALKING;
         }
-        if (_motion_state == WALKING && _velocity == 0.0f) {
+
+        // Leave walking only if NOTHING is requested
+        if (_motion_state == WALKING && !wants_translation && !wants_rotation) {
             _next_state = STANDING;
         }
 
@@ -367,8 +375,8 @@ void Controller::run() {
 
             // 1) World-frame desired motion (commanded)
             float32_t v_world[2] = {
-                _velocity * arm_cos_f32(_heading),
-                _velocity * arm_sin_f32(_heading)
+                _velocity * arm_cos_f32(effective_heading),
+                _velocity * arm_sin_f32(effective_heading)
             };
 
             // 2) Convert world-frame velocity to body frame
