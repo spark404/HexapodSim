@@ -16,6 +16,21 @@
 
 int getStringCode(const std::string &input);
 
+static float clamp(float x, float min, float max) {
+    if (x < min) return min;
+    if (x > max) return max;
+    return x;
+}
+
+static inline float wrap_to_pi(float angle)
+{
+    angle = fmodf(angle + M_PI, 2.0f * M_PI);
+    if (angle < 0.0f) {
+        angle += 2.0f * M_PI;
+    }
+    return angle - M_PI;
+}
+
 Controller::Controller() {
     _time_us = 0;
 }
@@ -23,7 +38,6 @@ Controller::Controller() {
 Controller::~Controller() = default;
 
 void Controller::init() {
-
     typedef enum {
         BOOT,
         SYNCING,
@@ -135,6 +149,11 @@ void Controller::run() {
 
     uint16_t powerdown_timeout = POWERDOWN_TIMEOUT;
 
+    float32_t orientation_error = 0;
+    float32_t orientation_delta = 0;
+    float32_t rotation_velocity = 0.1; // radians/second, best between 0.3 and 1.0 while moving
+    float32_t rotation_step = 0;
+
     /* Infinite loop */
     while (!terminate) {
         // Wait for a sync pulse from gazebo on the clock topic
@@ -154,11 +173,15 @@ void Controller::run() {
             continue;
         }
         last_time_us = _time_us;
-        float32_t delta_t_s = (float32_t)delta_t_us / 1000000;
+        float32_t delta_t_s = (float32_t) delta_t_us / 1000000;
 
         // Update from the callback
         _velocity = _next_velocity;
         _heading = _next_heading;
+        _orientation = _robot_state.hexapod.rotation[2];
+
+        orientation_error = wrap_to_pi(_next_orientation - _orientation);
+
         if (_motion_state == WALKING || _motion_state == STANDING) {
             if (_next_height != _robot_state.body.translation[2]) {
                 _robot_state.body.translation[2] = _next_height; // Mirrors the height set in the target
@@ -251,9 +274,12 @@ void Controller::run() {
                     measured_leg_servo_angles[2] + static_cast<float32_t>(D2R(25))
                 };
                 const float32_t alpha = 1.f;
-                current_leg_state->actual_joint_angles[0] = compensated_angles[0] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[0];
-                current_leg_state->actual_joint_angles[1] = compensated_angles[1] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[1];
-                current_leg_state->actual_joint_angles[2] = compensated_angles[2] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[2];
+                current_leg_state->actual_joint_angles[0] =
+                        compensated_angles[0] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[0];
+                current_leg_state->actual_joint_angles[1] =
+                        compensated_angles[1] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[1];
+                current_leg_state->actual_joint_angles[2] =
+                        compensated_angles[2] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[2];
             }
         }
 
@@ -336,13 +362,45 @@ void Controller::run() {
             }
 
             // Determine the movement
-            float32_t motion_vector[3] = {_velocity * arm_cos_f32(_heading), _velocity * arm_sin_f32(_heading), 0};
-            float32_t movement_vector[3];
-            arm_vec_mult_scalar_f32(motion_vector, delta_t_s, movement_vector, 3);
+            float32_t max_rotation_step = rotation_velocity * delta_t_s;
+            rotation_step = clamp(orientation_error, -max_rotation_step, +max_rotation_step);
 
-            // Move the hexapod in the world
-            _robot_state.hexapod.translation[0] += movement_vector[0];
-            _robot_state.hexapod.translation[1] += movement_vector[1];
+            // 1) World-frame desired motion (commanded)
+            float32_t v_world[2] = {
+                _velocity * arm_cos_f32(_heading),
+                _velocity * arm_sin_f32(_heading)
+            };
+
+            // 2) Convert world-frame velocity to body frame
+            float32_t yaw = _robot_state.hexapod.rotation[2];
+
+            float32_t v_body[2] = {
+                v_world[0] * arm_cos_f32(-yaw) - v_world[1] * arm_sin_f32(-yaw),
+                v_world[0] * arm_sin_f32(-yaw) + v_world[1] * arm_cos_f32(-yaw)
+            };
+
+            float32_t movement_vector[3] = {
+                v_body[0] * delta_t_s,
+                v_body[1] * delta_t_s,
+                0.0f
+            };
+
+            // 3) Integrate rotation AFTER
+            _robot_state.hexapod.rotation[2] += rotation_step;
+
+            // movement_vector is BODY frame
+            float32_t yaw_mid = yaw + 0.5f * rotation_step;
+
+            float32_t dx_world =
+                movement_vector[0] * arm_cos_f32(yaw_mid) -
+                movement_vector[1] * arm_sin_f32(yaw_mid);
+
+            float32_t dy_world =
+                movement_vector[0] * arm_sin_f32(yaw_mid) +
+                movement_vector[1] * arm_cos_f32(yaw_mid);
+
+            _robot_state.hexapod.translation[0] += dx_world;
+            _robot_state.hexapod.translation[1] += dy_world;
 
             // Update the translations so they are performed with respect to the new location
             pose_get_transformation(&_robot_state.hexapod, &Thexapod);
@@ -351,6 +409,7 @@ void Controller::run() {
             arm_mat_mult_f32(&Thexapod, &Tbody, &Thexapod_body);
 
             float32_t longest_path = 0.f;
+            float32_t longest_lifted_path = 0.f;
             float32_t remaining_path_length = 0.f;
             float32_t paths[6][4][3];
             for (int i = 0; i < 6; i++) {
@@ -364,12 +423,36 @@ void Controller::run() {
                 forward_kinematics(current_leg_state->actual_joint_angles, tip_in_coxa);
                 matrix_3d_vec_transform(&current_leg_state->coxa_mat, tip_in_coxa, p_current_in_body_frame);
 
+                // Vector from body center to leg reference point (body frame)
+                // float32_t r[2] = {
+                //     origin[0] - _robot_state.body.translation[0],
+                //     origin[1] - _robot_state.body.translation[1]
+                // };
+                float32_t r[2] = {
+                    p_current_in_body_frame[0],
+                    p_current_in_body_frame[1]
+                };
+
+                // Perpendicular vector (z × r)
+                float32_t r_perp[2] = {
+                    -r[1],
+                    r[0]
+                };
+
+                // Rotation displacement for this timestep
+                float32_t rot_disp[2] = {
+                    r_perp[0] * rotation_step,
+                    r_perp[1] * rotation_step
+                };
+
                 if (current_leg_state->grounded) {
-                    float32_t movement_vector_grounded[3];
-                    arm_vec_mult_scalar_f32(movement_vector, -1, movement_vector_grounded, 3);
+                    float32_t arc_disp[2] = {
+                        -movement_vector[0] + rot_disp[0],
+                        -movement_vector[1] + rot_disp[1]
+                    };
 
                     float32_t point[2];
-                    project_point_on_circle(step_size, origin, movement_vector_grounded, point);
+                    project_point_on_circle(step_size, origin, arc_disp, point);
                     float32_t p_target_in_body_frame[3] = {point[0], point[1], _robot_state.body.translation[2] * -1};
 
                     arm_vec_copy_f32(p_current_in_body_frame, paths[i][0], 3);
@@ -383,11 +466,33 @@ void Controller::run() {
                     longest_path = fmaxf(path_length, longest_path);
                 } else {
                     float32_t point[2];
-                    project_point_on_circle(step_size, origin, movement_vector, point);
+                    float32_t arc_disp[2] = {
+                        movement_vector[0] + rot_disp[0],
+                        movement_vector[1] + rot_disp[1]
+                    };
+
+                    project_point_on_circle(step_size, origin, arc_disp, point);
+
                     float32_t p_target_in_body_frame[3] = {point[0], point[1], _robot_state.body.translation[2] * -1};
 
                     calculate_path(p_current_in_body_frame, p_target_in_body_frame, 25, 2.0f, paths[i]);
+                    float32_t path_length = arm_euclidean_distance_f32(p_current_in_body_frame, p_target_in_body_frame,
+                                                                       3);
+
+                    longest_lifted_path = fmaxf(path_length, longest_lifted_path);
                 }
+            }
+
+            longest_path = fminf(longest_path, longest_lifted_path);
+
+            float32_t max_r = 0.0f;
+            for (int i = 0; i < 6; i++) {
+                float32_t r = arm_euclidean_distance_f32(
+                    _robot_state.leg_state[i].tip_home,
+                    _robot_state.body.translation,
+                    2
+                );
+                max_r = fmaxf(max_r, r);
             }
 
             for (int i = 0; i < 6; i++) {
@@ -399,7 +504,14 @@ void Controller::run() {
                 matrix_3d_invert(&T, &Tinv);
 
                 float32_t movement_velocity = arm_vec_magnitude_f32(movement_vector, 3);
-                float32_t substeps = longest_path / movement_velocity;
+                float32_t rotational_velocity = fabsf(rotation_step) * max_r;
+
+                float32_t effective_velocity =
+                        movement_velocity + rotational_velocity;
+
+                effective_velocity = fmaxf(effective_velocity, 1e-3f);
+
+                float32_t substeps = longest_path / effective_velocity;
 
                 float32_t path_length = calculate_path_length(paths[i]);
                 float32_t step_length = path_length / substeps;
@@ -429,9 +541,9 @@ void Controller::run() {
                 inverse_kinematics(origin, p_next_in_coxa_frame, _robot_state.leg_state[i].next_joint_angles);
             }
 
-            printf("Remaining: %5.2f, Longest: %5.2f\n", remaining_path_length, longest_path);
+            // printf("Remaining: %5.2f, Longest: %5.2f\n", remaining_path_length, longest_path);
             if (remaining_path_length < CLOSE_BY_THRESHOLD) {
-                LOG_DEBUG("Swap");
+                // LOG_DEBUG("Swap");
                 for (int i = 0; i < 6; i++) {
                     struct leg_state *current_leg_state = &_robot_state.leg_state[i];
                     current_leg_state->grounded = !current_leg_state->grounded;
@@ -458,9 +570,11 @@ void Controller::run() {
 
             uint8_t limit_alert = 0;
             for (int axis = 0; axis < 3; axis++) {
-                if (leg_servo_angles[axis] < current_leg->limits[axis][0] || leg_servo_angles[axis] > current_leg->limits[axis][1]) {
+                if (leg_servo_angles[axis] < current_leg->limits[axis][0] || leg_servo_angles[axis] > current_leg->
+                    limits[axis][1]) {
                     LOG_ERROR("Limit alert triggered, leg %d, axis %d", i, axis);
-                    LOG_ERROR("Calculated value %5.2f, limits %5.2f, %5.2f", leg_servo_angles[axis], current_leg->limits[axis][0], current_leg->limits[axis][1]);
+                    LOG_ERROR("Calculated value %5.2f, limits %5.2f, %5.2f", leg_servo_angles[axis],
+                              current_leg->limits[axis][0], current_leg->limits[axis][1]);
                     limit_alert = 1;
                 }
             }
@@ -496,6 +610,7 @@ void Controller::shutdown() {
 }
 
 int ticker = 0;
+
 void Controller::clockCallback(const gz::msgs::Clock &clock) {
     const uint64_t time_us = (clock.sim().sec() * 1000000) + (clock.sim().nsec() / 1000);
     if (time_us <= _time_us) {
@@ -504,7 +619,7 @@ void Controller::clockCallback(const gz::msgs::Clock &clock) {
     _time_us = time_us;
 
     ticker++;
-    if (ticker==2) {
+    if (ticker == 2) {
         // Tick the main loop of the controller
         ticker = 0;
         _tick.notify_one();
@@ -513,8 +628,8 @@ void Controller::clockCallback(const gz::msgs::Clock &clock) {
 
 void Controller::jointStateCallback(const gz::msgs::Model &model) {
     for (int i = 0; i < model.joint_size(); i++) {
-        const auto& joint = model.joint(i);
-        const auto& str = joint.name();
+        const auto &joint = model.joint(i);
+        const auto &str = joint.name();
 
         if (str.find("servo") != std::string::npos) {
             std::string leg = str.substr(4, 2);
@@ -572,7 +687,8 @@ int Controller::read_actual_servo_position(const int leg_id, uint8_t servo_count
 }
 
 
-int Controller::write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3>& servos, uint8_t servo_count, float32_t *actual_servo_angles) {
+int Controller::write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3> &servos,
+                                          uint8_t servo_count, float32_t *actual_servo_angles) {
     for (int i = 0; i < servo_count; i++) {
         float32_t angle = actual_servo_angles[i];
         if (i == 1) {
@@ -589,12 +705,14 @@ int Controller::write_next_servo_position(const std::array<gz::transport::Node::
 
 int getStringCode(const std::string &input) {
     // Create a mapping of strings to numbers
-    static const std::unordered_map<std::string, int> stringToCode = {{"fr", 0},
-                                                                      {"cr", 1},
-                                                                      {"br", 2},
-                                                                      {"fl", 3},
-                                                                      {"cl", 4},
-                                                                      {"bl", 5}};
+    static const std::unordered_map<std::string, int> stringToCode = {
+        {"fr", 0},
+        {"cr", 1},
+        {"br", 2},
+        {"fl", 3},
+        {"cl", 4},
+        {"bl", 5}
+    };
 
     // Find the input string in the map
     auto it = stringToCode.find(input);

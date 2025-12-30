@@ -67,8 +67,10 @@ private:
     float32_t _heading = 0;
     float32_t _next_heading = 0;
     float32_t _next_height = 100;
+    float32_t _orientation = 0;
+    float32_t _next_orientation = M_PI_2;
 
     uint64_t _time_us{};
 
-    std::array<std::array<float32_t, 3>, 6> _measured_servo_angles;
+    std::array<std::array<float32_t, 3>, 6> _measured_servo_angles{};
 };

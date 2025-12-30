@@ -33,6 +33,8 @@ int main() {
     sigaction(SIGTERM, &SignalAction, nullptr);
     sigaction(SIGINT, &SignalAction, nullptr);
 
+    sleep(5);
+
     if (!pauze(false)) {
         std::cerr << "Failed to start the simulation" << std::endl;
         return 1;
@@ -44,12 +46,12 @@ int main() {
     }
 
     sleep(1);
-
+/*
     if (!follow()) {
         std::cerr << "Follow failed" << std::endl;
         return 1;
     }
-
+*/
     auto *instance = new Controller();
     instance->init();
 
@@ -155,10 +157,10 @@ int follow() {
 
     target.set_data("hexspider");
     offset.set_x(0.0f);
-    offset.set_y(-0.50f);
-    offset.set_z(0.30f);
+    offset.set_y(-0.40f);
+    offset.set_z(0.40f);
 
-    bool executed = node.Request("/gui/follow/offset", offset, 1000, res, result);
+    bool executed = node.Request("/gui/follow", target, 1000, res, result);
     if (!executed) {
         std::cerr << "Timeout while calling follow service" << std::endl;
         return 0;
@@ -169,7 +171,7 @@ int follow() {
         return 0;
     }
 
-    executed = node.Request("/gui/follow", target, 1000, res, result);
+    executed = node.Request("/gui/follow/offset", offset, 1000, res, result);
     if (!executed) {
         std::cerr << "Timeout while calling follow service" << std::endl;
         return 0;
@@ -179,6 +181,7 @@ int follow() {
         std::cerr << "Service call failed" << std::endl;
         return 0;
     }
+
 
 
     return 1;

@@ -6,7 +6,7 @@ include(FetchContent)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(gz-transport NAMES gz-transport14)
+find_package(gz-transport)
 
 find_package(cmsis-dsp QUIET)
 if (NOT cmsis-dsp_FOUND)
@@ -36,7 +36,7 @@ add_executable(Controller main.cpp
 )
 
 target_link_libraries(Controller PRIVATE
-        gz-transport14::core
+        gz-transport::core
         HexapodMath
         CMSISDSP
 )
