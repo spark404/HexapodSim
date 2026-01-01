@@ -14,11 +14,18 @@
 #define CTRL_EPS_VEL         1e-3f
 #define CTRL_EPS_ANG         1e-3f
 #define CTRL_SERVO_Z_OFFSET  D2R(25)
-#define CTRL_POWERDOWN_TIMEOUT 30  // sec
+#define CTRL_POWERDOWN_TIMEOUT 120  // sec
 #define CTRL_DEFAULT_VEL    50.0f
 #define CTRL_LIFT_VEL      20.0f
 #define CTRL_LIFT_Z        50.0f
 #define CTRL_BODY_Z        100.0f // mm
 #define CTRL_MAX_ROT_FOOT_MM 6.0f // CTRL_MAX_ROT_FOOT_MM <= CTRL_LEG_RADIUS_MM / 2
+#define CTRL_ROT_STEP_RAD  D2R(5.0f)
+
+/*
+CTRL_ROT_STEP_RAD   = 5°  ≈ 0.087 rad
+CTRL_MAX_YAW_RATE  = 30°/s ≈ 0.52 rad/s
+CTRL_MAX_ROT_FOOT_MM = 15–25 mm
+*/
 
 #endif //CONTROLLER_CONFIG_H

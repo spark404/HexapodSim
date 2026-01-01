@@ -48,7 +48,7 @@ private:
     std::mutex _tick_mutex;
     std::condition_variable _tick;
 
-    float32_t _cmd_velocity = 60;
+    float32_t _cmd_velocity = 0;
     float32_t _cmd_heading = 0;
     float32_t _cmd_height = 100;
 

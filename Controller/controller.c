@@ -25,6 +25,7 @@ void controller_init(controller_ctx_t *ctx) {
     ctx->state = CTRL_BOOT;
     ctx->next_state = CTRL_BOOT;
     ctx->powerdown_timeout = CTRL_POWERDOWN_TIMEOUT;
+    ctx->pending_yaw = 0.0f;
 
     // Do a bunch of static calculations that depend on the robot configuration in robot.h
     pose_set(&ctx->robot.hexapod, 0, 0, 0, 0, 0, 0);
@@ -73,6 +74,13 @@ void controller_set_state_callback(
 ) {
     ctx->on_state_change = cb;
     ctx->cb_user_data = user_data;
+}
+
+void swap_legs(controller_ctx_t *ctx) {
+    for (int i = 0; i < 6; i++) {
+        struct leg_state *current_leg_state = &ctx->robot.leg_state[i];
+        current_leg_state->grounded = !current_leg_state->grounded;
+    }
 }
 
 void controller_update(controller_ctx_t *ctx, const controller_command_t *cmd, float32_t dt_s) {
@@ -223,6 +231,9 @@ void controller_update(controller_ctx_t *ctx, const controller_command_t *cmd, f
             }
         }
 
+        bool rotate_only = (fabsf(velocity) < CTRL_EPS_VEL) &&
+                   (fabsf(ctx->yaw_error) > CTRL_EPS_ANG);
+
         // Determine the movement
         float32_t desired_omega = ctx->yaw_error / dt_s;
         desired_omega = clampf(desired_omega, -CTRL_MAX_YAW_RATE, +CTRL_MAX_YAW_RATE);
@@ -247,10 +258,23 @@ void controller_update(controller_ctx_t *ctx, const controller_command_t *cmd, f
         };
 
         // 3) Integrate rotation AFTER
-        ctx->robot.hexapod.rotation[2] += rotation_step;
+        if (!rotate_only) {
+            ctx->robot.hexapod.rotation[2] += rotation_step;
+        } else {
+            ctx->pending_yaw += rotation_step;
+        }
+
+        ctx->pending_yaw = clampf(
+            ctx->pending_yaw,
+            -CTRL_ROT_STEP_RAD,
+            +CTRL_ROT_STEP_RAD
+        );
 
         // movement_vector is BODY frame
-        float32_t yaw_mid = yaw + 0.5f * rotation_step;
+        float32_t yaw_mid = yaw;
+        if (!rotate_only) {
+            yaw_mid += 0.5f * rotation_step;
+        }
 
         float32_t dx_world =
                 movement_vector[0] * arm_cos_f32(yaw_mid) -
@@ -379,11 +403,14 @@ void controller_update(controller_ctx_t *ctx, const controller_command_t *cmd, f
 
             effective_velocity = fmaxf(effective_velocity, 1e-3f);
 
-            if (longest_path < CTRL_CLOSE_THRESH) {
-                continue;
+            float32_t effective_path = longest_path;
+
+            if (rotate_only) {
+                effective_path = fmaxf(fabsf(rotation_step) * max_r,
+                                        CTRL_ROT_STEP_RAD * max_r);
             }
 
-            float32_t substeps = longest_path / effective_velocity;
+            float32_t substeps = effective_path / effective_velocity;
             substeps = fmaxf(substeps, 1.0f);
 
             float32_t path_length = calculate_path_length(paths[i]);
@@ -402,8 +429,21 @@ void controller_update(controller_ctx_t *ctx, const controller_command_t *cmd, f
                 // Use the existing coordinates for the world frame
                 arm_vec_copy_f32(current_leg_state->tip_world_coordinates, p_next_in_world_frame, 3);
             } else {
-                remaining_path_length = fmaxf(remaining_path_length,
-                                              arm_euclidean_distance_f32(p_next_in_body_frame, paths[i][3], 3));
+                if (rotate_only) {
+                    remaining_path_length = fmaxf(
+                        remaining_path_length,
+                        fabsf(rotation_step)
+                    );
+                } else {
+                    remaining_path_length = fmaxf(
+                        remaining_path_length,
+                        arm_euclidean_distance_f32(
+                            p_next_in_body_frame,
+                            paths[i][3],
+                            3
+                        )
+                    );
+                }
                 arm_vec_copy_f32(p_next_in_world_frame, current_leg_state->tip_world_coordinates, 3);
             }
 
@@ -414,10 +454,18 @@ void controller_update(controller_ctx_t *ctx, const controller_command_t *cmd, f
             inverse_kinematics(origin, p_next_in_coxa_frame, ctx->robot.leg_state[i].next_joint_angles);
         }
 
-        if (remaining_path_length < CTRL_CLOSE_THRESH) {
-            for (int i = 0; i < 6; i++) {
-                struct leg_state *current_leg_state = &ctx->robot.leg_state[i];
-                current_leg_state->grounded = !current_leg_state->grounded;
+        if (rotate_only) {
+            if (fabsf(ctx->pending_yaw) >= CTRL_ROT_STEP_RAD) {
+
+                // Apply rotation ONCE
+                ctx->robot.hexapod.rotation[2] += ctx->pending_yaw;
+                ctx->pending_yaw = 0.0f;
+
+                swap_legs(ctx);
+            }
+        } else {
+            if (remaining_path_length < CTRL_CLOSE_THRESH) {
+                swap_legs(ctx);
             }
         }
     }

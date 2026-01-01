@@ -46,6 +46,7 @@ typedef struct controller_ctx {
 
     float32_t yaw_error;
     float32_t delta_yaw;
+    float32_t pending_yaw;
 
     struct robot_state robot;
 
