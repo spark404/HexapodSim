@@ -3,7 +3,6 @@
 #include <csignal>
 
 #include "HexapodController.h"
-#include "Robot.h"
 #include "ServoTest.h"
 #include "log.h"
 

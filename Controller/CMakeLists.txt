@@ -33,6 +33,7 @@ endif ()
 add_executable(Controller main.cpp
         HexapodController.cpp
         calculator.c
+        controller.c
 )
 
 target_link_libraries(Controller PRIVATE

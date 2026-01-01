@@ -26,7 +26,7 @@ typedef enum {
 // #define LOG_WITH_FILE_AND_LINE
 
 // Allow overriding
-inline int g_log_level = LOG_LEVEL_DEBUG;
+static int g_log_level = LOG_LEVEL_DEBUG;
 
 static inline const char* log_level_str(log_level_t level) {
     switch((int)level) {

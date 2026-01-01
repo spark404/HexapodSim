@@ -7,20 +7,8 @@
 #include <gz/transport.hh>
 #include <gz/msgs.hh>
 
-#include "Robot.h"
-
-#define POWERDOWN_TIMEOUT 120 // seconds
-#define CLOSE_BY_THRESHOLD 2 // mm
-
-
-typedef enum {
-    BOOT,
-    SYNCING,
-    STANDUP,
-    STANDING,
-    WALKING,
-    POWERDOWN,
-} state_t;
+#include "robot.h"
+#include "controller.h"
 
 const std::string leg_names[6] {
     "fr",
@@ -52,10 +40,7 @@ private:
 
     volatile bool terminate = false;
 
-    robot_state _robot_state{};
     std::array<std::array<gz::transport::Node::Publisher, 3>, 6> _servo_publishers;
-    state_t _motion_state = BOOT;
-    state_t _next_state = SYNCING;
 
     gz::transport::Node _node;
     std::mutex _node_mutex;
@@ -67,10 +52,9 @@ private:
     float32_t _cmd_heading = 0;
     float32_t _cmd_height = 100;
 
-    float32_t _velocity = 60;
-    float32_t _orientation = 0;
-
     uint64_t _time_us{};
+
+    controller_ctx_t _ctx;
 
     std::array<std::array<float32_t, 3>, 6> _measured_servo_angles{};
 };
