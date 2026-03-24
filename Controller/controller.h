@@ -21,6 +21,7 @@ void controller_set_state_callback(
 
 void controller_update(
     controller_ctx_t *ctx,
+    const controller_attitude_t *attitude,
     const controller_command_t *cmd,
     float32_t dt_s
 );

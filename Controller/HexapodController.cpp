@@ -159,7 +159,7 @@ void HexapodController::run() {
             }
         }
 
-        controller_update(&_ctx, &cmd, delta_t_s);
+        controller_update(&_ctx, nullptr, &cmd, delta_t_s);
 
         // Write next values to the servos
         for (int i = 0; i < 6; i++) {

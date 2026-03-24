@@ -16,6 +16,7 @@ typedef enum {
     CTRL_STANDUP,
     CTRL_STANDING,
     CTRL_WALKING,
+    CTRL_ROTATING,
     CTRL_POWERDOWN,
 } controller_state_t;
 
@@ -24,6 +25,12 @@ typedef struct {
     float32_t heading;    // rad (world)
     float32_t height;     // mm
 } controller_command_t;
+
+typedef struct {
+    float32_t roll;
+    float32_t pitch;
+    float32_t yaw;
+} controller_attitude_t;
 
 /* Forward declaration */
 struct controller_ctx;
