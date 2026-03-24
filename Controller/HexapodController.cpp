@@ -149,7 +149,7 @@ void HexapodController::run() {
                     -measured_leg_servo_angles[1],
                     measured_leg_servo_angles[2] + static_cast<float32_t>(D2R(25))
                 };
-                const float32_t alpha = 1.f;
+                const float32_t alpha = 0.f;
                 current_leg_state->actual_joint_angles[0] =
                         compensated_angles[0] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[0];
                 current_leg_state->actual_joint_angles[1] =
@@ -265,7 +265,7 @@ void HexapodController::jointStateCallback(const gz::msgs::Model &model) {
             auto v = (float32_t) joint.axis1().position();
             auto joint_id = joint_index - 1;
 
-            this->_measured_servo_angles[i][joint_id] = v;
+            this->_measured_servo_angles[leg_index][joint_id] = v;
         }
     }
 }
