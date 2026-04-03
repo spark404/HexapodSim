@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <sdf version="1.10">
   <world name="hexspider_world">
-    <physics name="1ms" type="ignored">
+    <physics name="1ms" type="dart">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
     </physics>
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics">
         </plugin>
@@ -38,7 +39,19 @@
             </plane>
           </geometry>
           <surface>
-      </surface>
+            <friction>
+              <ode>
+                <mu>1.0</mu>
+                <mu2>1.0</mu2>
+              </ode>
+            </friction>
+            <contact>
+              <ode>
+                <kp>10000</kp>
+                <kd>10</kd>
+              </ode>
+            </contact>
+          </surface>
         </collision>
         <visual name="visual">
           <geometry>

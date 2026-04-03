@@ -330,6 +330,9 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
         // Ensure tripod consistency (only re-init if all legs grounded)
         tripod_init_gait(ctx, &Thexapod_body);
 
+        LOG_DEBUG("Actual: %5.2f, %5.2f, %5.2f", ctx->robot.leg_state[1].actual_joint_angles[0], ctx->robot.leg_state[1].actual_joint_angles[1], ctx->robot.leg_state[1].actual_joint_angles[2] );
+        LOG_DEBUG("Next: %5.2f, %5.2f, %5.2f", ctx->robot.leg_state[1].next_joint_angles[0], ctx->robot.leg_state[1].next_joint_angles[1], ctx->robot.leg_state[1].next_joint_angles[2] );
+
         // 1) Compute desired rotation for this timestep
         float32_t desired_omega = ctx->yaw_error / dt_s;
         desired_omega = clampf(desired_omega, -CTRL_MAX_YAW_RATE, +CTRL_MAX_YAW_RATE);
@@ -481,9 +484,9 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
 
             effective_velocity = fmaxf(effective_velocity, 1e-3f);
 
-            if (longest_path < CTRL_CLOSE_THRESH) {
-                continue;
-            }
+            //if (longest_path < CTRL_CLOSE_THRESH) {
+            //    continue;
+            //}
 
             float32_t substeps = longest_path / effective_velocity;
             substeps = fmaxf(substeps, 1.0f);
@@ -512,6 +515,11 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
                         3
                     )
                 );
+                if (i==1) {
+                    LOG_DEBUG("Path length: %5.2f", remaining_path_length);
+                    LOG_DEBUG("P_NEXT_BODY: %5.2f, %5.2f, %5.2f", p_next_body[0], p_next_body[1], p_next_body[2]);
+                    LOG_DEBUG("P_TARGET: %5.2f, %5.2f, %5.2f", paths[i][3][0], paths[i][3][1], paths[i][3][2]);
+                }
                 arm_vec_copy_f32(p_next_world, leg->tip_world_coordinates, 3);
             }
 
@@ -522,6 +530,7 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
             inverse_kinematics(origin3, p_next_coxa, leg->next_joint_angles);
         }
 
+        LOG_DEBUG("Remaining: %5.2f", remaining_path_length);
         if (remaining_path_length < CTRL_CLOSE_THRESH) {
             swap_legs(ctx);
         }

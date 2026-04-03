@@ -41,3 +41,9 @@ target_link_libraries(Controller PRIVATE
         HexapodMath
         CMSISDSP
 )
+
+add_executable(HexapodControl HexapodControl.cpp)
+
+target_link_libraries(HexapodControl PRIVATE
+        gz-transport::core
+)

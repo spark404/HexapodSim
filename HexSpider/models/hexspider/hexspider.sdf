@@ -4,110 +4,110 @@
         <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"></plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_1</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_2</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_3</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_1</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_2</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_3</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_1</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_2</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_3</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_1</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_2</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_3</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_1</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_2</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_3</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_1</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_2</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_3</joint_name>
-                        <p_gain>40</p_gain>
-            <i_gain>4</i_gain>
+                        <p_gain>125</p_gain>
+            <i_gain>0</i_gain>
             <d_gain>0</d_gain>
         </plugin>
         <plugin filename="gz-sim-imu-system"
@@ -151,9 +151,9 @@
             </collision>
             <sensor name="imu_sensor" type="imu">
                 <always_on>1</always_on>
-                <update_rate>1</update_rate>
+                <update_rate>100</update_rate>
                 <visualize>true</visualize>
-                <!-- <topic>/model/hexspider/imu</topic> -->
+                <topic>/model/hexspider/imu</topic>
             </sensor>
         </link>
         <link name="leg_br_2xl_430">
@@ -302,6 +302,20 @@
                         <length>0.150</length>
                     </cylinder>
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1.0</mu>
+                            <mu2>1.0</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>10000</kp>
+                            <kd>10</kd>
+                        </ode>
+                    </contact>
+                </surface>
             </collision>
         </link>
         <link name="leg_cr_2xl_430">
@@ -450,6 +464,20 @@
                         <length>0.150</length>
                     </cylinder>
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1.0</mu>
+                            <mu2>1.0</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>10000</kp>
+                            <kd>10</kd>
+                        </ode>
+                    </contact>
+                </surface>
             </collision>
         </link>
         <link name="leg_fr_2xl_430">
@@ -598,6 +626,20 @@
                         <length>0.150</length>
                     </cylinder>
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1.0</mu>
+                            <mu2>1.0</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>10000</kp>
+                            <kd>10</kd>
+                        </ode>
+                    </contact>
+                </surface>
             </collision>
         </link>
         <link name="leg_bl_2xl_430">
@@ -746,6 +788,20 @@
                         <length>0.150</length>
                     </cylinder>
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1.0</mu>
+                            <mu2>1.0</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>10000</kp>
+                            <kd>10</kd>
+                        </ode>
+                    </contact>
+                </surface>
             </collision>
         </link>
         <link name="leg_cl_2xl_430">
@@ -894,6 +950,20 @@
                         <length>0.150</length>
                     </cylinder>
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1.0</mu>
+                            <mu2>1.0</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>10000</kp>
+                            <kd>10</kd>
+                        </ode>
+                    </contact>
+                </surface>
             </collision>
         </link>
         <link name="leg_fl_2xl_430">
@@ -1042,6 +1112,20 @@
                         <length>0.150</length>
                     </cylinder>
                 </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1.0</mu>
+                            <mu2>1.0</mu2>
+                        </ode>
+                    </friction>
+                    <contact>
+                        <ode>
+                            <kp>10000</kp>
+                            <kd>10</kd>
+                        </ode>
+                    </contact>
+                </surface>
             </collision>
         </link>
         <joint name="leg_br_servo_1" type="revolute">
@@ -1051,7 +1135,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>3</effort>
                     <velocity>6</velocity>
                     <lower>-1.57</lower>
                     <upper>1.57</upper>
@@ -1065,7 +1149,7 @@
             <axis>
                 <xyz expressed_in="leg_br_2xl_430">1 0 0</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
@@ -1079,7 +1163,7 @@
             <axis>
                 <xyz expressed_in="leg_br_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>8</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1098,7 +1182,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>3</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1112,7 +1196,7 @@
             <axis>
                 <xyz expressed_in="leg_cr_2xl_430">1 0 0</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
@@ -1126,7 +1210,7 @@
             <axis>
                 <xyz expressed_in="leg_cr_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>8</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1145,7 +1229,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>3</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1159,7 +1243,7 @@
             <axis>
                 <xyz expressed_in="leg_fr_2xl_430">1 0 0</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
@@ -1173,7 +1257,7 @@
             <axis>
                 <xyz expressed_in="leg_fr_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>8</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1192,7 +1276,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>3</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1206,7 +1290,7 @@
             <axis>
                 <xyz expressed_in="leg_bl_2xl_430">1 0 0</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
@@ -1220,7 +1304,7 @@
             <axis>
                 <xyz expressed_in="leg_bl_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>8</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1239,7 +1323,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>3</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1253,7 +1337,7 @@
             <axis>
                 <xyz expressed_in="leg_cl_2xl_430">1 0 0</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
@@ -1267,7 +1351,7 @@
             <axis>
                 <xyz expressed_in="leg_cl_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>8</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1286,7 +1370,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>3</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1300,7 +1384,7 @@
             <axis>
                 <xyz expressed_in="leg_fl_2xl_430">1 0 0</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
@@ -1314,7 +1398,7 @@
             <axis>
                 <xyz expressed_in="leg_fl_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>362</effort>
+                    <effort>8</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>

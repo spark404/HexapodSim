@@ -17,6 +17,16 @@
 
 int getStringCode(const std::string &input);
 
+// Servo interpolator constants — match firmware ServoTask
+static constexpr float32_t SERVO_MAX_VELOCITY     = 8.0f;    // rad/s
+static constexpr float32_t SERVO_MAX_ACCELERATION = 40.0f;   // rad/s²
+static constexpr float32_t SERVO_DEADBAND_RAD     = 0.002f;  // ~0.11°
+static constexpr float32_t SERVO_MIN_STEP_RAD     = 0.003f;  // ~0.17°
+
+static inline float32_t clampf(float32_t v, float32_t lo, float32_t hi) {
+    return v < lo ? lo : (v > hi ? hi : v);
+}
+
 HexapodController::HexapodController() {
     _time_us = 0;
 }
@@ -48,12 +58,18 @@ void HexapodController::run() {
     using namespace std::chrono_literals;
 
     std::unique_lock<std::mutex> lk(_tick_mutex);
-    uint64_t last_time_us = 0;
 
     std::cout << "Starting listeners for joint state" << std::endl;
     std::string joint_state_topic = "/world/hexspider_world/model/hexspider/joint_state";
     if (!(_node.Subscribe(joint_state_topic, &HexapodController::jointStateCallback, this))) {
         std::cerr << "Failed to subscribe to joint_state topic" << std::endl;
+        return;
+    }
+
+    std::cout << "Starting listeners for IMU" << std::endl;
+    std::string imu_topic = "/model/hexspider/imu";
+    if (!(_node.Subscribe(imu_topic, &HexapodController::imuCallback, this))) {
+        std::cerr << "Failed to subscribe to IMU topic" << std::endl;
         return;
     }
 
@@ -87,6 +103,9 @@ void HexapodController::run() {
 
     controller_command_t cmd;
 
+    uint64_t last_controller_time_us = 0;
+    uint64_t last_servo_time_us = 0;
+
     /* Infinite loop */
     while (!terminate) {
         // Wait for a sync pulse from gazebo on the clock topic
@@ -101,102 +120,128 @@ void HexapodController::run() {
             break;
         }
 
-        uint64_t delta_t_us = _time_us - last_time_us;
-        if (delta_t_us < 10000) {
-            continue;
-        }
-        last_time_us = _time_us;
-        float32_t delta_t_s = (float32_t) delta_t_us / 1000000;
+        uint64_t now = _time_us;
+        uint64_t ctrl_delta_us = now - last_controller_time_us;
+        uint64_t servo_delta_us = now - last_servo_time_us;
 
-        // Update from the callback
-        cmd.heading = _cmd_heading;
-        cmd.velocity = _cmd_velocity;
-        cmd.height = _cmd_height;
+        // Controller update at 10 Hz (every 100ms), matching firmware CONTROL_LOOP_INTERVAL
+        if (ctrl_delta_us >= 100000) {
+            last_controller_time_us = now;
+            float32_t delta_t_s = (float32_t) ctrl_delta_us / 1000000.0f;
 
-        // Determine the actual servo positions
-        for (int i = 0; i < 6; i++) {
-            struct leg_state *current_leg_state = &_ctx.robot.leg_state[i];
-            const struct leg *current_leg = &_ctx.cfg->leg[i];
+            // Update from the callback
+            cmd.heading = _cmd_heading;
+            cmd.velocity = _cmd_velocity;
+            cmd.height = _cmd_height;
 
-            std::array<gz::transport::Node::Publisher, 3> leg_servos = {
-                _servo_publishers[i][0],
-                _servo_publishers[i][1],
-                _servo_publishers[i][2],
-            };
-            float32_t measured_leg_servo_angles[3];
+            // Determine the actual servo positions
+            for (int i = 0; i < 6; i++) {
+                struct leg_state *current_leg_state = &_ctx.robot.leg_state[i];
 
-            if (read_actual_servo_position(i, 3, measured_leg_servo_angles) < 0) {
-                // LOG_WARN("Failed to read servo position for leg %d\r\n", i);
-                // Use the defined angles as a stop gap
-                // FIXME, these angles are uncompensated
-                arm_vec_copy_f32(_ctx.robot.leg_state[i].next_joint_angles,
-                                 _ctx.robot.leg_state[i].actual_joint_angles, 3);
-                continue;
-            }
+                float32_t measured_leg_servo_angles[3];
 
-            // Compensate angles for geometry
-            if (_ctx.state == CTRL_SYNCING) {
-                // We exclusive use the measured position
-                current_leg_state->actual_joint_angles[0] = measured_leg_servo_angles[0];
-                current_leg_state->actual_joint_angles[1] = -measured_leg_servo_angles[1];
-                current_leg_state->actual_joint_angles[2] = measured_leg_servo_angles[2] + D2R(25);
-            } else {
-                // We use a mix of the calculated angle and the measured angle to offset any measurement error
-                // and compensate for a bit of deadzone at low speeds
-                // Use alpha to tune the mix
-                float32_t compensated_angles[3] = {
-                    measured_leg_servo_angles[0],
-                    -measured_leg_servo_angles[1],
-                    measured_leg_servo_angles[2] + static_cast<float32_t>(D2R(25))
-                };
-                const float32_t alpha = 0.f;
-                current_leg_state->actual_joint_angles[0] =
-                        compensated_angles[0] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[0];
-                current_leg_state->actual_joint_angles[1] =
-                        compensated_angles[1] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[1];
-                current_leg_state->actual_joint_angles[2] =
-                        compensated_angles[2] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[2];
-            }
-        }
+                if (read_actual_servo_position(i, 3, measured_leg_servo_angles) < 0) {
+                    arm_vec_copy_f32(_ctx.robot.leg_state[i].next_joint_angles,
+                                     _ctx.robot.leg_state[i].actual_joint_angles, 3);
+                    continue;
+                }
 
-        controller_update(&_ctx, nullptr, &cmd, delta_t_s);
-
-        // Write next values to the servos
-        for (int i = 0; i < 6; i++) {
-            struct leg_state *current_leg_state = &_ctx.robot.leg_state[i];
-            const struct leg *current_leg = &_ctx.cfg->leg[i];
-
-            std::array<gz::transport::Node::Publisher, 3> leg_servos = {
-                _servo_publishers[i][0],
-                _servo_publishers[i][1],
-                _servo_publishers[i][2],
-            };
-            float32_t leg_servo_angles[3];
-
-            // Compensate angles for geometry
-            leg_servo_angles[0] = current_leg_state->next_joint_angles[0];
-            leg_servo_angles[1] = -current_leg_state->next_joint_angles[1];
-            leg_servo_angles[2] = current_leg_state->next_joint_angles[2] - D2R(25);
-
-            uint8_t limit_alert = 0;
-            for (int axis = 0; axis < 3; axis++) {
-                if (leg_servo_angles[axis] < current_leg->limits[axis][0] || leg_servo_angles[axis] > current_leg->
-                    limits[axis][1]) {
-                    LOG_ERROR("Limit alert triggered, leg %d, axis %d", i, axis);
-                    LOG_ERROR("Calculated value %5.2f, limits %5.2f, %5.2f", leg_servo_angles[axis],
-                              current_leg->limits[axis][0], current_leg->limits[axis][1]);
-                    limit_alert = 1;
+                // Compensate angles for geometry
+                if (_ctx.state == CTRL_SYNCING) {
+                    current_leg_state->actual_joint_angles[0] = measured_leg_servo_angles[0];
+                    current_leg_state->actual_joint_angles[1] = -measured_leg_servo_angles[1];
+                    current_leg_state->actual_joint_angles[2] = measured_leg_servo_angles[2] + D2R(25);
+                } else {
+                    float32_t compensated_angles[3] = {
+                        measured_leg_servo_angles[0],
+                        -measured_leg_servo_angles[1],
+                        measured_leg_servo_angles[2] + static_cast<float32_t>(D2R(25))
+                    };
+                    const float32_t alpha = 0.f;
+                    current_leg_state->actual_joint_angles[0] =
+                            compensated_angles[0] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[0];
+                    current_leg_state->actual_joint_angles[1] =
+                            compensated_angles[1] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[1];
+                    current_leg_state->actual_joint_angles[2] =
+                            compensated_angles[2] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[2];
                 }
             }
 
-            if (limit_alert && _ctx.state == CTRL_WALKING) {
-                cmd.velocity = 0.0f;
-                cmd.heading = 0.0f;
-                _ctx.next_state = CTRL_POWERDOWN;
-                continue;
-            }
+            controller_update(&_ctx, &_attitude, &cmd, delta_t_s);
 
-            this->write_next_servo_position(leg_servos, 3, leg_servo_angles);
+            // Publish controller targets to the shared target array for the servo interpolator
+            for (int i = 0; i < 6; i++) {
+                arm_vec_copy_f32(_ctx.robot.leg_state[i].next_joint_angles, _target_joint_angles[i], 3);
+            }
+        }
+
+        // Servo interpolation + write at 25 Hz (every 40ms), matching firmware SERVO_LOOP_INTERVAL
+        if (servo_delta_us >= 40000) {
+            last_servo_time_us = now;
+            float32_t servo_dt_s = clampf((float32_t)servo_delta_us / 1000000.0f, 0.0005f, 0.05f);
+            float32_t max_step = SERVO_MAX_VELOCITY * servo_dt_s;
+
+            uint8_t any_limit_alert = 0;
+
+            for (int i = 0; i < 6; i++) {
+                const struct leg *current_leg = &_ctx.cfg->leg[i];
+
+                // Build joint_angles in controller space from raw Gazebo measurements
+                float32_t joint_angles[3] = {
+                    _measured_servo_angles[i][0],
+                    _measured_servo_angles[i][1],
+                    _measured_servo_angles[i][2] + static_cast<float32_t>(D2R(25))
+                };
+
+                float32_t commanded_position[3];
+
+                for (int j = 0; j < 3; j++) {
+                    float32_t error = _target_joint_angles[i][j] - joint_angles[j];
+                    float32_t step = 0.0f;
+
+                    if (fabsf(error) >= SERVO_DEADBAND_RAD) {
+                        step = clampf(error, -max_step, max_step);
+                        if (fabsf(step) < SERVO_MIN_STEP_RAD) {
+                            step = copysignf(SERVO_MIN_STEP_RAD, step);
+                        }
+                    }
+
+                    float32_t desired_vel = clampf(step / servo_dt_s, -SERVO_MAX_VELOCITY, SERVO_MAX_VELOCITY);
+                    float32_t dv = desired_vel - _last_servo_velocity[i][j];
+                    dv = clampf(dv, -SERVO_MAX_ACCELERATION * servo_dt_s, SERVO_MAX_ACCELERATION * servo_dt_s);
+                    float32_t vel = _last_servo_velocity[i][j] + dv;
+                    step = vel * servo_dt_s;
+                    _last_servo_velocity[i][j] = vel;
+
+                    commanded_position[j] = joint_angles[j] + step;
+
+                    if (commanded_position[j] < current_leg->limits[j][0] || commanded_position[j] > current_leg->limits[j][1]) {
+                        LOG_ERROR("Limit alert triggered, leg %d, axis %d", i, j);
+                        LOG_ERROR("Calculated value %5.2f, limits %5.2f, %5.2f", commanded_position[j],
+                                  current_leg->limits[j][0], current_leg->limits[j][1]);
+                        any_limit_alert = 1;
+                    }
+                }
+
+                if (any_limit_alert && _ctx.state == CTRL_WALKING) {
+                    cmd.velocity = 0.0f;
+                    cmd.heading = 0.0f;
+                    _ctx.next_state = CTRL_POWERDOWN;
+                    break;
+                }
+
+                std::array<gz::transport::Node::Publisher, 3> leg_servos = {
+                    _servo_publishers[i][0],
+                    _servo_publishers[i][1],
+                    _servo_publishers[i][2],
+                };
+                float32_t leg_servo_angles[3] = {
+                    commanded_position[0],
+                    -commanded_position[1],
+                    commanded_position[2] - static_cast<float32_t>(D2R(25))
+                };
+                this->write_next_servo_position(leg_servos, 3, leg_servo_angles);
+            }
         }
     }
 
@@ -229,8 +274,8 @@ void HexapodController::clockCallback(const gz::msgs::Clock &clock) {
     _time_us = time_us;
 
     ticker++;
-    if (ticker == 2) {
-        // Tick the main loop of the controller
+    if (ticker == 5) {
+        // Tick the main loop every 5ms to support 25Hz servo and 10Hz controller rates
         ticker = 0;
         _tick.notify_one();
     }
@@ -268,6 +313,17 @@ void HexapodController::jointStateCallback(const gz::msgs::Model &model) {
             this->_measured_servo_angles[leg_index][joint_id] = v;
         }
     }
+}
+
+void HexapodController::imuCallback(const gz::msgs::IMU &imu) {
+    const auto &q = imu.orientation();
+    const double w = q.w(), x = q.x(), y = q.y(), z = q.z();
+
+    // Quaternion to roll/pitch/yaw (ZYX Euler)
+    _attitude.roll  = (float32_t) atan2(2.0 * (w*x + y*z), 1.0 - 2.0 * (x*x + y*y));
+    _attitude.pitch = (float32_t) asin( 2.0 * (w*y - z*x));
+    // Chassis is mounted at -90° yaw in the SDF; correct back to model forward
+    _attitude.yaw   = (float32_t)(atan2(2.0 * (w*z + x*y), 1.0 - 2.0 * (y*y + z*z)) + M_PI_2);
 }
 
 void HexapodController::velocityCallback(const gz::msgs::Double &velocity) {
