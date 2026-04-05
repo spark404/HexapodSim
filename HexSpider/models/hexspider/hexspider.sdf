@@ -4,111 +4,93 @@
         <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"></plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_1</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>0.0</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_2</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>-0.5236</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_3</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>1.5472</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_1</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>0.0</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_2</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>-0.5236</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_3</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>1.5472</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_1</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>0.0</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_2</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>-0.5236</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_3</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>1.5472</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_1</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>0.0</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_2</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>-0.5236</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_3</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>1.5472</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_1</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>0.0</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_2</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>-0.5236</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_3</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>1.5472</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_1</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>0.0</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_2</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>-0.5236</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_3</joint_name>
-                        <p_gain>125</p_gain>
-            <i_gain>0</i_gain>
-            <d_gain>0</d_gain>
+            <initial_position>1.5472</initial_position>
+            <use_velocity_commands>1</use_velocity_commands>
         </plugin>
         <plugin filename="gz-sim-imu-system"
                 name="gz::sim::systems::Imu">
@@ -268,21 +250,21 @@
         <link name="leg_br_femur">
             <pose relative_to="leg_br_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
             <inertial>
-                <mass>0.028812</mass>
+                <mass>0.029032</mass>
                 <inertia>
-                    <ixx>0.000034156</ixx>
+                    <ixx>0.000035762</ixx>
                     <ixy>0</ixy>
-                    <ixz>0.000012503</ixz>
-                    <iyy>0.000036442</iyy>
+                    <ixz>0.000013215</ixz>
+                    <iyy>0.000038367</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000010478</izz>
-                </inertia>
+                    <izz>0.000010773</izz>
+                </inertia>             
             </inertial>
             <visual name="visual">
                 <pose relative_to="leg_br_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
                 <geometry>
                     <mesh>
-                        <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
                         <scale>0.001 0.001 0.001</scale>
                     </mesh>
                 </geometry>
@@ -295,12 +277,12 @@
                 <cast_shadows>1</cast_shadows>
             </visual>
             <collision name="collision">
-                <pose relative_to="leg_br_femur">0 0 0.012 0 -0.96 0</pose>
+                <pose relative_to="leg_br_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
                 <geometry>
-                    <cylinder>
-                        <radius>0.005</radius>
-                        <length>0.150</length>
-                    </cylinder>
+                    <mesh>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
+                        <scale>0.001 0.001 0.001</scale>
+                    </mesh>
                 </geometry>
                 <surface>
                     <friction>
@@ -444,7 +426,7 @@
                 <pose relative_to="leg_cr_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
                 <geometry>
                     <mesh>
-                        <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
                         <scale>0.001 0.001 0.001</scale>
                     </mesh>
                 </geometry>
@@ -457,12 +439,12 @@
                 <cast_shadows>1</cast_shadows>
             </visual>
             <collision name="collision">
-                <pose relative_to="leg_cr_femur">0 0 0.012 0 -0.96 0</pose>
+                <pose relative_to="leg_cr_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>            
                 <geometry>
-                    <cylinder>
-                        <radius>0.005</radius>
-                        <length>0.150</length>
-                    </cylinder>
+                    <mesh>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
+                        <scale>0.001 0.001 0.001</scale>
+                    </mesh>
                 </geometry>
                 <surface>
                     <friction>
@@ -606,7 +588,7 @@
                 <pose relative_to="leg_fr_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
                 <geometry>
                     <mesh>
-                        <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
                         <scale>0.001 0.001 0.001</scale>
                     </mesh>
                 </geometry>
@@ -619,12 +601,12 @@
                 <cast_shadows>1</cast_shadows>
             </visual>
             <collision name="collision">
-                <pose relative_to="leg_fr_femur">0 0 0.012 0 -0.96 0</pose>
+                <pose relative_to="leg_fr_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>            
                 <geometry>
-                    <cylinder>
-                        <radius>0.005</radius>
-                        <length>0.150</length>
-                    </cylinder>
+                    <mesh>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
+                        <scale>0.001 0.001 0.001</scale>
+                    </mesh>
                 </geometry>
                 <surface>
                     <friction>
@@ -768,7 +750,7 @@
                 <pose relative_to="leg_bl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
                 <geometry>
                     <mesh>
-                        <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
                         <scale>0.001 0.001 0.001</scale>
                     </mesh>
                 </geometry>
@@ -781,12 +763,12 @@
                 <cast_shadows>1</cast_shadows>
             </visual>
             <collision name="collision">
-                <pose relative_to="leg_bl_femur">0 0 0.012 0 -0.96 0</pose>
+                <pose relative_to="leg_bl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>            
                 <geometry>
-                    <cylinder>
-                        <radius>0.005</radius>
-                        <length>0.150</length>
-                    </cylinder>
+                    <mesh>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
+                        <scale>0.001 0.001 0.001</scale>
+                    </mesh>
                 </geometry>
                 <surface>
                     <friction>
@@ -930,7 +912,7 @@
                 <pose relative_to="leg_cl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
                 <geometry>
                     <mesh>
-                        <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
                         <scale>0.001 0.001 0.001</scale>
                     </mesh>
                 </geometry>
@@ -943,12 +925,12 @@
                 <cast_shadows>1</cast_shadows>
             </visual>
             <collision name="collision">
-                <pose relative_to="leg_cl_femur">0 0 0.012 0 -0.96 0</pose>
+                <pose relative_to="leg_cl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>            
                 <geometry>
-                    <cylinder>
-                        <radius>0.005</radius>
-                        <length>0.150</length>
-                    </cylinder>
+                    <mesh>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
+                        <scale>0.001 0.001 0.001</scale>
+                    </mesh>
                 </geometry>
                 <surface>
                     <friction>
@@ -1092,7 +1074,7 @@
                 <pose relative_to="leg_fl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>
                 <geometry>
                     <mesh>
-                        <uri>model://hexspider/meshes/Femur_v41.stl</uri>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
                         <scale>0.001 0.001 0.001</scale>
                     </mesh>
                 </geometry>
@@ -1105,12 +1087,12 @@
                 <cast_shadows>1</cast_shadows>
             </visual>
             <collision name="collision">
-                <pose relative_to="leg_fl_femur">0 0 0.012 0 -0.96 0</pose>
+                <pose relative_to="leg_fl_femur">-0.24056 0.0 -0.038 0 -0.44 0</pose>            
                 <geometry>
-                    <cylinder>
-                        <radius>0.005</radius>
-                        <length>0.150</length>
-                    </cylinder>
+                    <mesh>
+                        <uri>model://hexspider/meshes/Femur_20260405_1.stl</uri>
+                        <scale>0.001 0.001 0.001</scale>
+                    </mesh>
                 </geometry>
                 <surface>
                     <friction>
@@ -1135,7 +1117,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>3</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-1.57</lower>
                     <upper>1.57</upper>
@@ -1163,7 +1145,7 @@
             <axis>
                 <xyz expressed_in="leg_br_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>8</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1182,7 +1164,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>3</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1210,7 +1192,7 @@
             <axis>
                 <xyz expressed_in="leg_cr_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>8</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1229,7 +1211,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>3</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1257,7 +1239,7 @@
             <axis>
                 <xyz expressed_in="leg_fr_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>8</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1276,7 +1258,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>3</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1304,7 +1286,7 @@
             <axis>
                 <xyz expressed_in="leg_bl_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>8</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1323,7 +1305,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>3</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1351,7 +1333,7 @@
             <axis>
                 <xyz expressed_in="leg_cl_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>8</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
@@ -1370,7 +1352,7 @@
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
                 <limit>
-                    <effort>3</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
@@ -1398,7 +1380,7 @@
             <axis>
                 <xyz expressed_in="leg_fl_xl_430">0 0 1</xyz>
                 <limit>
-                    <effort>8</effort>
+                    <effort>5</effort>
                     <velocity>6</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>

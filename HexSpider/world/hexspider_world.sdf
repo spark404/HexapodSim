@@ -6,6 +6,8 @@
       <real_time_factor>1.0</real_time_factor>
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
+    <!-- Set to 0 0 0 to disable gravity for isolated servo stability testing -->
+    <gravity>0 0 -9.8</gravity>
     <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics">
         </plugin>
     <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands">
@@ -41,8 +43,8 @@
           <surface>
             <friction>
               <ode>
-                <mu>1.0</mu>
-                <mu2>1.0</mu2>
+                <mu>0.8</mu>
+                <mu2>0.4</mu2>
               </ode>
             </friction>
             <contact>

@@ -33,6 +33,39 @@ HexapodController::HexapodController() {
 
 HexapodController::~HexapodController() = default;
 
+/**
+ * Copies the servo angles to joint angles with specific transformations.
+ *
+ * @param servo_angles An array of three float32_t values representing the input servo angles.
+ * @param joint_angles An array of three float32_t values where the computed joint angles will be stored.
+ *                     The values are modified as follows:
+ *                     - joint_angles[0] is directly assigned from servo_angles[0].
+ *                     - joint_angles[1] is assigned the negated value of servo_angles[1].
+ *                     - joint_angles[2] is assigned the value of servo_angles[2] plus 25 degrees converted to radians.
+ */
+void copy_servo_to_joint_angles(const float32_t servo_angles[3], float32_t joint_angles[3]) {
+    joint_angles[0] = servo_angles[0];
+    joint_angles[1] = -servo_angles[1];
+    joint_angles[2] = servo_angles[2] + static_cast<float32_t>(D2R(25));
+}
+
+/**
+ * Copies the joint angles to servo angles with specific transformations.
+ *
+ * @param joint_angles An array of three float32_t values representing the input joint angles.
+ *                     The values are used as follows:
+ *                     - joint_angles[0] is directly assigned to servo_angles[0].
+ *                     - joint_angles[1] is negated and assigned to servo_angles[1].
+ *                     - joint_angles[2] is reduced by 25 degrees, converted to radians,
+ *                       and then assigned to servo_angles[2].
+ * @param servo_angles An array of three float32_t values where the computed servo angles will be stored.
+ */
+void copy_joint_to_servo_angles(const float32_t joint_angles[3], float32_t servo_angles[3]) {
+    servo_angles[0] = joint_angles[0];
+    servo_angles[1] = -joint_angles[1];
+    servo_angles[2] = joint_angles[2] - static_cast<float32_t>(D2R(25));
+}
+
 void HexapodController::init() {
     controller_init(&_ctx);
 
@@ -136,34 +169,24 @@ void HexapodController::run() {
 
             // Determine the actual servo positions
             for (int i = 0; i < 6; i++) {
-                struct leg_state *current_leg_state = &_ctx.robot.leg_state[i];
-
-                float32_t measured_leg_servo_angles[3];
-
-                if (read_actual_servo_position(i, 3, measured_leg_servo_angles) < 0) {
-                    arm_vec_copy_f32(_ctx.robot.leg_state[i].next_joint_angles,
-                                     _ctx.robot.leg_state[i].actual_joint_angles, 3);
-                    continue;
-                }
+                struct leg_state *leg_state = &_ctx.robot.leg_state[i];
 
                 // Compensate angles for geometry
                 if (_ctx.state == CTRL_SYNCING) {
-                    current_leg_state->actual_joint_angles[0] = measured_leg_servo_angles[0];
-                    current_leg_state->actual_joint_angles[1] = -measured_leg_servo_angles[1];
-                    current_leg_state->actual_joint_angles[2] = measured_leg_servo_angles[2] + D2R(25);
+                    arm_copy_f32(_actual_joint_angles[i], leg_state->actual_joint_angles, 3);
+                    arm_copy_f32(_actual_joint_angles[i], leg_state->next_joint_angles, 3);
                 } else {
-                    float32_t compensated_angles[3] = {
-                        measured_leg_servo_angles[0],
-                        -measured_leg_servo_angles[1],
-                        measured_leg_servo_angles[2] + static_cast<float32_t>(D2R(25))
-                    };
-                    const float32_t alpha = 0.f;
-                    current_leg_state->actual_joint_angles[0] =
-                            compensated_angles[0] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[0];
-                    current_leg_state->actual_joint_angles[1] =
-                            compensated_angles[1] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[1];
-                    current_leg_state->actual_joint_angles[2] =
-                            compensated_angles[2] * (1 - alpha) + alpha * current_leg_state->next_joint_angles[2];
+                    float32_t joint_angles[3];
+                    arm_copy_f32(_actual_joint_angles[i], joint_angles, 3);
+
+                    // Use heavy filtering during standup to reduce feedback oscillations
+                    const float32_t alpha = 0.f; // (_ctx.state == CTRL_STANDUP) ? 0.7f : 0.f;
+                    leg_state->actual_joint_angles[0] =
+                            joint_angles[0] * (1 - alpha) + alpha * leg_state->actual_joint_angles[0];
+                    leg_state->actual_joint_angles[1] =
+                            joint_angles[1] * (1 - alpha) + alpha * leg_state->actual_joint_angles[1];
+                    leg_state->actual_joint_angles[2] =
+                            joint_angles[2] * (1 - alpha) + alpha * leg_state->actual_joint_angles[2];
                 }
             }
 
@@ -184,19 +207,18 @@ void HexapodController::run() {
             uint8_t any_limit_alert = 0;
 
             for (int i = 0; i < 6; i++) {
-                const struct leg *current_leg = &_ctx.cfg->leg[i];
+                const leg *leg = &_ctx.cfg->leg[i];
 
-                // Build joint_angles in controller space from raw Gazebo measurements
-                float32_t joint_angles[3] = {
-                    _measured_servo_angles[i][0],
-                    _measured_servo_angles[i][1],
-                    _measured_servo_angles[i][2] + static_cast<float32_t>(D2R(25))
-                };
+                // 1. Read the actual state
+                float32_t measured_leg_servo_angles[3];
+                read_actual_servo_position(i, 3, measured_leg_servo_angles);
+                copy_servo_to_joint_angles(measured_leg_servo_angles, _actual_joint_angles[i]);
 
-                float32_t commanded_position[3];
+                // 2. Determine commanded position
+                float32_t commanded_joint_position[3];
 
                 for (int j = 0; j < 3; j++) {
-                    float32_t error = _target_joint_angles[i][j] - joint_angles[j];
+                    float32_t error = _target_joint_angles[i][j] - _actual_joint_angles[i][j];
                     float32_t step = 0.0f;
 
                     if (fabsf(error) >= SERVO_DEADBAND_RAD) {
@@ -213,12 +235,12 @@ void HexapodController::run() {
                     step = vel * servo_dt_s;
                     _last_servo_velocity[i][j] = vel;
 
-                    commanded_position[j] = joint_angles[j] + step;
+                    commanded_joint_position[j] = _actual_joint_angles[i][j] + step;
 
-                    if (commanded_position[j] < current_leg->limits[j][0] || commanded_position[j] > current_leg->limits[j][1]) {
+                    if (commanded_joint_position[j] < leg->limits[j][0] || commanded_joint_position[j] > leg->limits[j][1]) {
                         LOG_ERROR("Limit alert triggered, leg %d, axis %d", i, j);
-                        LOG_ERROR("Calculated value %5.2f, limits %5.2f, %5.2f", commanded_position[j],
-                                  current_leg->limits[j][0], current_leg->limits[j][1]);
+                        LOG_ERROR("Calculated value %5.2f, limits %5.2f, %5.2f", commanded_joint_position[j],
+                                  leg->limits[j][0], leg->limits[j][1]);
                         any_limit_alert = 1;
                     }
                 }
@@ -230,17 +252,23 @@ void HexapodController::run() {
                     break;
                 }
 
+                // 3. Write the state to the joints
                 std::array<gz::transport::Node::Publisher, 3> leg_servos = {
                     _servo_publishers[i][0],
                     _servo_publishers[i][1],
                     _servo_publishers[i][2],
                 };
-                float32_t leg_servo_angles[3] = {
-                    commanded_position[0],
-                    -commanded_position[1],
-                    commanded_position[2] - static_cast<float32_t>(D2R(25))
-                };
-                this->write_next_servo_position(leg_servos, 3, leg_servo_angles);
+
+                float32_t commanded_servo_angles[3];
+                copy_joint_to_servo_angles(commanded_joint_position, commanded_servo_angles);
+                write_next_servo_position(leg_servos, 3, commanded_servo_angles);
+
+                // Debug output for first leg during standup
+                if (i == 0 && _ctx.state == CTRL_STANDUP) {
+                    LOG_DEBUG("Servo cmd: %.3f, %.3f, %.3f (joints: %.3f, %.3f, %.3f)",
+                        commanded_servo_angles[0], commanded_servo_angles[1], commanded_servo_angles[2],
+                        commanded_joint_position[0], commanded_joint_position[1], commanded_joint_position[2]);
+                }
             }
         }
     }
@@ -341,7 +369,7 @@ void HexapodController::heightCallback(const gz::msgs::Double &height) {
     _cmd_height = height.data();
 }
 
-int HexapodController::read_actual_servo_position(const int leg_id, uint8_t servo_count, float32_t *actual_servo_angles) {
+int HexapodController::read_actual_servo_position(const int leg_id, uint8_t servo_count, float32_t *actual_servo_angles) const {
     for (int i = 0; i < servo_count; i++) {
         float32_t angle = _measured_servo_angles[leg_id][i];
         if (i == 1) {
@@ -354,7 +382,7 @@ int HexapodController::read_actual_servo_position(const int leg_id, uint8_t serv
 
 
 int HexapodController::write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3> &servos,
-                                          uint8_t servo_count, float32_t *actual_servo_angles) {
+                                          uint8_t servo_count, const float32_t *actual_servo_angles) {
     for (int i = 0; i < servo_count; i++) {
         float32_t angle = actual_servo_angles[i];
         if (i == 1) {

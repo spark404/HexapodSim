@@ -24,7 +24,7 @@ import pty
 import select
 
 SCRIPT_DIR   = os.path.dirname(os.path.abspath(__file__))
-CONTROLLER   = os.path.join(SCRIPT_DIR, "Controller", "build", "Controller")
+CONTROLLER   = os.path.join(SCRIPT_DIR, "Controller", "cmake-build-debug", "Controller")
 LOG_SCRIPT   = os.path.join(SCRIPT_DIR, "log_joint.py")
 
 # Ensure Gazebo transport uses loopback — must be set before any gz subprocess

@@ -36,8 +36,8 @@ private:
     void headingCallback(const gz::msgs::Double &heading);
     void heightCallback(const gz::msgs::Double &heading);
 
-    int read_actual_servo_position(int leg_id, uint8_t servo_count, float32_t *actual_servo_angles);
-    int write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3>& servos, uint8_t servo_count, float32_t *actual_servo_angles);
+    int read_actual_servo_position(int leg_id, uint8_t servo_count, float32_t *actual_servo_angles) const;
+    static int write_next_servo_position(const std::array<gz::transport::Node::Publisher, 3>& servos, uint8_t servo_count, const float32_t *actual_servo_angles);
 
     volatile bool terminate = false;
 
@@ -61,6 +61,7 @@ private:
 
     std::array<std::array<float32_t, 3>, 6> _measured_servo_angles{};
 
+    float32_t _actual_joint_angles[6][3]{};   // written by servo on every tick, read by controller tick
     float32_t _target_joint_angles[6][3]{};   // written by controller tick, read by servo tick
     float32_t _last_servo_velocity[6][3]{};   // velocity state for servo interpolator
 };

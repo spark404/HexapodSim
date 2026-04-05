@@ -26,6 +26,7 @@ void controller_init(controller_ctx_t *ctx) {
     ctx->next_state = CTRL_BOOT;
     ctx->powerdown_timeout = CTRL_POWERDOWN_TIMEOUT;
     ctx->pending_yaw = 0.0f;
+    ctx->on_state_change = NULL;
 
     // Do a bunch of static calculations that depend on the robot configuration in robot.h
     pose_set(&ctx->robot.hexapod, 0, 0, 0, 0, 0, 0);
@@ -256,9 +257,32 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
 
     if (ctx->state == CTRL_SYNCING) {
         // Make sure actual and next angles are set to the same value
+        // Check if we have valid joint data (not all zeros)
+        int has_valid_data = 0;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (fabsf(ctx->robot.leg_state[i].actual_joint_angles[j]) > 0.01f) {
+                    has_valid_data = 1;
+                    break;
+                }
+            }
+            if (has_valid_data) break;
+        }
+
+        if (!has_valid_data) {
+            LOG_DEBUG("SYNC: Waiting for valid joint data...");
+            return; // Stay in SYNCING until we get real data
+        }
+
         for (int i = 0; i < 6; i++) {
             arm_vec_copy_f32(ctx->robot.leg_state[i].actual_joint_angles,
                              ctx->robot.leg_state[i].next_joint_angles, 3);
+            if (i == 0) {
+                LOG_DEBUG("SYNC Leg 0 angles: %.3f, %.3f, %.3f",
+                    ctx->robot.leg_state[i].actual_joint_angles[0],
+                    ctx->robot.leg_state[i].actual_joint_angles[1],
+                    ctx->robot.leg_state[i].actual_joint_angles[2]);
+            }
         }
         ctx->next_state = CTRL_STANDUP;
     } else if (ctx->state == CTRL_STANDUP) {
@@ -278,7 +302,7 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
             // Use last commanded position (next_joint_angles) instead of actual position
             // to ensure smooth, continuous trajectory that the servo task can track
             float32_t p_current_in_coxa_frame[3];
-            forward_kinematics(current_leg_state->next_joint_angles, p_current_in_coxa_frame);
+            forward_kinematics(current_leg_state->actual_joint_angles, p_current_in_coxa_frame);
 
             float32_t p_current_in_body_frame[3];
             matrix_3d_vec_transform(&current_leg_state->coxa_mat, p_current_in_coxa_frame, p_current_in_body_frame);
