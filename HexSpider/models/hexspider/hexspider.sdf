@@ -98,15 +98,15 @@
         <link name="chassis">
             <pose relative_to="__model__">0 0 0.15 0 0 -1.57</pose>
             <inertial>
-                <mass>0.188490</mass>
+                <mass>0.441100</mass>
                 <density>100</density>
                 <inertia>
-                    <ixx>4.024e-04</ixx>
-                    <ixy>5.662e-19</ixy>
-                    <ixz>-5.234e-18</ixz>
-                    <iyy>2.646e-04</iyy>
+                    <ixx>6.1967e-04</ixx>
+                    <ixy>4.773e-19</ixy>
+                    <ixz>-4.412e-18</ixz>
+                    <iyy>2.7303e-04</iyy>
                     <iyz>0</iyz>
-                    <izz>5.502e-04</izz>
+                    <izz>7.5191e-04</izz>
                 </inertia>
             </inertial>
             <visual name="chassis_visual">
@@ -141,14 +141,14 @@
         <link name="leg_br_2xl_430">
             <pose relative_to="chassis">0.058219 -0.083748 0.0 0 0 0.610865</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.098200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>2.69148e-05</ixx>
+                    <ixy>5.26071e-07</ixy>
+                    <ixz>2.88588e-07</ixz>
+                    <iyy>1.70277e-05</iyy>
+                    <iyz>-5.25069e-07</iyz>
+                    <izz>2.70501e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -177,14 +177,14 @@
         <link name="leg_br_coxa">
             <pose relative_to="leg_br_2xl_430">0 -0.062 0 0 0 0</pose>
             <inertial>
-                <mass>0.059976</mass>
+                <mass>0.031067</mass>
                 <inertia>
-                    <ixx>0.000019426</ixx>
-                    <ixy>-7.7e-11</ixy>
-                    <ixz>4.885e-14</ixz>
-                    <iyy>0.000032981</iyy>
+                    <ixx>1.00624e-05</ixx>
+                    <ixy>-3.98848e-11</ixy>
+                    <ixz>2.53036e-14</ixz>
+                    <iyy>1.70837e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000046665</izz>
+                    <izz>2.41718e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -214,14 +214,14 @@
         <link name="leg_br_xl_430">
             <pose relative_to="leg_br_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.057200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>1.56775e-05</ixx>
+                    <ixy>3.06429e-07</ixy>
+                    <ixz>1.68098e-07</ixz>
+                    <iyy>9.91836e-06</iyy>
+                    <iyz>-3.05845e-07</iyz>
+                    <izz>1.57563e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -250,14 +250,14 @@
         <link name="leg_br_femur">
             <pose relative_to="leg_br_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
             <inertial>
-                <mass>0.029032</mass>
+                <mass>0.022850</mass>
                 <inertia>
-                    <ixx>0.000035762</ixx>
+                    <ixx>2.81469e-05</ixx>
                     <ixy>0</ixy>
-                    <ixz>0.000013215</ixz>
-                    <iyy>0.000038367</iyy>
+                    <ixz>1.0401e-05</ixz>
+                    <iyy>3.01972e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000010773</izz>
+                    <izz>8.47902e-06</izz>
                 </inertia>             
             </inertial>
             <visual name="visual">
@@ -303,14 +303,14 @@
         <link name="leg_cr_2xl_430">
             <pose relative_to="chassis">0.082 0 0.0 0 0 1.570796</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.098200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>2.69148e-05</ixx>
+                    <ixy>5.26071e-07</ixy>
+                    <ixz>2.88588e-07</ixz>
+                    <iyy>1.70277e-05</iyy>
+                    <iyz>-5.25069e-07</iyz>
+                    <izz>2.70501e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -339,14 +339,14 @@
         <link name="leg_cr_coxa">
             <pose relative_to="leg_cr_2xl_430">0 -0.062 0 0 0 0</pose>
             <inertial>
-                <mass>0.059976</mass>
+                <mass>0.031067</mass>
                 <inertia>
-                    <ixx>0.000019426</ixx>
-                    <ixy>-7.7e-11</ixy>
-                    <ixz>4.885e-14</ixz>
-                    <iyy>0.000032981</iyy>
+                    <ixx>1.00624e-05</ixx>
+                    <ixy>-3.98848e-11</ixy>
+                    <ixz>2.53036e-14</ixz>
+                    <iyy>1.70837e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000046665</izz>
+                    <izz>2.41718e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -376,14 +376,14 @@
         <link name="leg_cr_xl_430">
             <pose relative_to="leg_cr_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.057200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>1.56775e-05</ixx>
+                    <ixy>3.06429e-07</ixy>
+                    <ixz>1.68098e-07</ixz>
+                    <iyy>9.91836e-06</iyy>
+                    <iyz>-3.05845e-07</iyz>
+                    <izz>1.57563e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -412,14 +412,14 @@
         <link name="leg_cr_femur">
             <pose relative_to="leg_cr_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
             <inertial>
-                <mass>0.028812</mass>
+                <mass>0.022850</mass>
                 <inertia>
-                    <ixx>0.000034156</ixx>
+                    <ixx>2.70882e-05</ixx>
                     <ixy>0</ixy>
-                    <ixz>0.000012503</ixz>
-                    <iyy>0.000036442</iyy>
+                    <ixz>9.91578e-06</ixz>
+                    <iyy>2.89011e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000010478</izz>
+                    <izz>8.30981e-06</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -465,14 +465,14 @@
         <link name="leg_fr_2xl_430">
             <pose relative_to="chassis">0.058219 0.083748 0.0 0 0 2.530727</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.098200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>2.69148e-05</ixx>
+                    <ixy>5.26071e-07</ixy>
+                    <ixz>2.88588e-07</ixz>
+                    <iyy>1.70277e-05</iyy>
+                    <iyz>-5.25069e-07</iyz>
+                    <izz>2.70501e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -501,14 +501,14 @@
         <link name="leg_fr_coxa">
             <pose relative_to="leg_fr_2xl_430">0 -0.062 0 0 0 0</pose>
             <inertial>
-                <mass>0.059976</mass>
+                <mass>0.031067</mass>
                 <inertia>
-                    <ixx>0.000019426</ixx>
-                    <ixy>-7.7e-11</ixy>
-                    <ixz>4.885e-14</ixz>
-                    <iyy>0.000032981</iyy>
+                    <ixx>1.00624e-05</ixx>
+                    <ixy>-3.98848e-11</ixy>
+                    <ixz>2.53036e-14</ixz>
+                    <iyy>1.70837e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000046665</izz>
+                    <izz>2.41718e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -538,14 +538,14 @@
         <link name="leg_fr_xl_430">
             <pose relative_to="leg_fr_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.057200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>1.56775e-05</ixx>
+                    <ixy>3.06429e-07</ixy>
+                    <ixz>1.68098e-07</ixz>
+                    <iyy>9.91836e-06</iyy>
+                    <iyz>-3.05845e-07</iyz>
+                    <izz>1.57563e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -574,14 +574,14 @@
         <link name="leg_fr_femur">
             <pose relative_to="leg_fr_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
             <inertial>
-                <mass>0.028812</mass>
+                <mass>0.022850</mass>
                 <inertia>
-                    <ixx>0.000034156</ixx>
+                    <ixx>2.70882e-05</ixx>
                     <ixy>0</ixy>
-                    <ixz>0.000012503</ixz>
-                    <iyy>0.000036442</iyy>
+                    <ixz>9.91578e-06</ixz>
+                    <iyy>2.89011e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000010478</izz>
+                    <izz>8.30981e-06</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -627,14 +627,14 @@
         <link name="leg_bl_2xl_430">
             <pose relative_to="chassis">-0.058219 -0.083748 0.0 0 0 -0.610865</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.098200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>2.69148e-05</ixx>
+                    <ixy>5.26071e-07</ixy>
+                    <ixz>2.88588e-07</ixz>
+                    <iyy>1.70277e-05</iyy>
+                    <iyz>-5.25069e-07</iyz>
+                    <izz>2.70501e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -663,14 +663,14 @@
         <link name="leg_bl_coxa">
             <pose relative_to="leg_bl_2xl_430">0 -0.062 0 0 0 0</pose>
             <inertial>
-                <mass>0.059976</mass>
+                <mass>0.031067</mass>
                 <inertia>
-                    <ixx>0.000019426</ixx>
-                    <ixy>-7.7e-11</ixy>
-                    <ixz>4.885e-14</ixz>
-                    <iyy>0.000032981</iyy>
+                    <ixx>1.00624e-05</ixx>
+                    <ixy>-3.98848e-11</ixy>
+                    <ixz>2.53036e-14</ixz>
+                    <iyy>1.70837e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000046665</izz>
+                    <izz>2.41718e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -700,14 +700,14 @@
         <link name="leg_bl_xl_430">
             <pose relative_to="leg_bl_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.057200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>1.56775e-05</ixx>
+                    <ixy>3.06429e-07</ixy>
+                    <ixz>1.68098e-07</ixz>
+                    <iyy>9.91836e-06</iyy>
+                    <iyz>-3.05845e-07</iyz>
+                    <izz>1.57563e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -736,14 +736,14 @@
         <link name="leg_bl_femur">
             <pose relative_to="leg_bl_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
             <inertial>
-                <mass>0.028812</mass>
+                <mass>0.022850</mass>
                 <inertia>
-                    <ixx>0.000034156</ixx>
+                    <ixx>2.70882e-05</ixx>
                     <ixy>0</ixy>
-                    <ixz>0.000012503</ixz>
-                    <iyy>0.000036442</iyy>
+                    <ixz>9.91578e-06</ixz>
+                    <iyy>2.89011e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000010478</izz>
+                    <izz>8.30981e-06</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -789,14 +789,14 @@
         <link name="leg_cl_2xl_430">
             <pose relative_to="chassis">-0.082 0 0.0 0 0 -1.570796</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.098200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>2.69148e-05</ixx>
+                    <ixy>5.26071e-07</ixy>
+                    <ixz>2.88588e-07</ixz>
+                    <iyy>1.70277e-05</iyy>
+                    <iyz>-5.25069e-07</iyz>
+                    <izz>2.70501e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -825,14 +825,14 @@
         <link name="leg_cl_coxa">
             <pose relative_to="leg_cl_2xl_430">0 -0.062 0 0 0 0</pose>
             <inertial>
-                <mass>0.059976</mass>
+                <mass>0.031067</mass>
                 <inertia>
-                    <ixx>0.000019426</ixx>
-                    <ixy>-7.7e-11</ixy>
-                    <ixz>4.885e-14</ixz>
-                    <iyy>0.000032981</iyy>
+                    <ixx>1.00624e-05</ixx>
+                    <ixy>-3.98848e-11</ixy>
+                    <ixz>2.53036e-14</ixz>
+                    <iyy>1.70837e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000046665</izz>
+                    <izz>2.41718e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -862,14 +862,14 @@
         <link name="leg_cl_xl_430">
             <pose relative_to="leg_cl_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.057200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>1.56775e-05</ixx>
+                    <ixy>3.06429e-07</ixy>
+                    <ixz>1.68098e-07</ixz>
+                    <iyy>9.91836e-06</iyy>
+                    <iyz>-3.05845e-07</iyz>
+                    <izz>1.57563e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -898,14 +898,14 @@
         <link name="leg_cl_femur">
             <pose relative_to="leg_cl_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
             <inertial>
-                <mass>0.028812</mass>
+                <mass>0.022850</mass>
                 <inertia>
-                    <ixx>0.000034156</ixx>
+                    <ixx>2.70882e-05</ixx>
                     <ixy>0</ixy>
-                    <ixz>0.000012503</ixz>
-                    <iyy>0.000036442</iyy>
+                    <ixz>9.91578e-06</ixz>
+                    <iyy>2.89011e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000010478</izz>
+                    <izz>8.30981e-06</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -951,14 +951,14 @@
         <link name="leg_fl_2xl_430">
             <pose relative_to="chassis">-0.058219 0.083748 0.0 0 0 -2.530727</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.098200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>2.69148e-05</ixx>
+                    <ixy>5.26071e-07</ixy>
+                    <ixz>2.88588e-07</ixz>
+                    <iyy>1.70277e-05</iyy>
+                    <iyz>-5.25069e-07</iyz>
+                    <izz>2.70501e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -987,14 +987,14 @@
         <link name="leg_fl_coxa">
             <pose relative_to="leg_fl_2xl_430">0 -0.062 0 0 0 0</pose>
             <inertial>
-                <mass>0.059976</mass>
+                <mass>0.031067</mass>
                 <inertia>
-                    <ixx>0.000019426</ixx>
-                    <ixy>-7.7e-11</ixy>
-                    <ixz>4.885e-14</ixz>
-                    <iyy>0.000032981</iyy>
+                    <ixx>1.00624e-05</ixx>
+                    <ixy>-3.98848e-11</ixy>
+                    <ixz>2.53036e-14</ixz>
+                    <iyy>1.70837e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000046665</izz>
+                    <izz>2.41718e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -1024,14 +1024,14 @@
         <link name="leg_fl_xl_430">
             <pose relative_to="leg_fl_coxa">0.0 -0.05 0.0 0.0 1.57 0.0</pose>
             <inertial>
-                <mass>0.098</mass>
+                <mass>0.057200</mass>
                 <inertia>
-                    <ixx>0.00002686</ixx>
-                    <ixy>0.000000525</ixy>
-                    <ixz>0.000000288</ixz>
-                    <iyy>0.000016993</iyy>
-                    <iyz>-0.000000524</iyz>
-                    <izz>0.000026995</izz>
+                    <ixx>1.56775e-05</ixx>
+                    <ixy>3.06429e-07</ixy>
+                    <ixz>1.68098e-07</ixz>
+                    <iyy>9.91836e-06</iyy>
+                    <iyz>-3.05845e-07</iyz>
+                    <izz>1.57563e-05</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
@@ -1060,14 +1060,14 @@
         <link name="leg_fl_femur">
             <pose relative_to="leg_fl_xl_430">0.04511 -0.06325 0 1.57 0.0 -1.57</pose>
             <inertial>
-                <mass>0.028812</mass>
+                <mass>0.022850</mass>
                 <inertia>
-                    <ixx>0.000034156</ixx>
+                    <ixx>2.70882e-05</ixx>
                     <ixy>0</ixy>
-                    <ixz>0.000012503</ixz>
-                    <iyy>0.000036442</iyy>
+                    <ixz>9.91578e-06</ixz>
+                    <iyy>2.89011e-05</iyy>
                     <iyz>0</iyz>
-                    <izz>0.000010478</izz>
+                    <izz>8.30981e-06</izz>
                 </inertia>
             </inertial>
             <visual name="visual">
