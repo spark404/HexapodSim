@@ -1,96 +1,172 @@
 <sdf version="1.10">
     <model name="hexspider" canonical_link="chassis">
         <pose>0 0 0 0 0 0</pose>
+        <!-- Servos modelled as Dynamixel XL430 / 2XL430 in position mode at ~11.1 V:
+             P-only position loop with output capped at stall torque (p_gain 5 Nm/rad ~ Position P Gain 640,
+             cmd_max 1.4 Nm), plus joint damping 0.23 Nm*s/rad = stall torque / no-load speed (1.4 / 5.97)
+             so torque falls linearly with speed like a DC motor. friction 0.03 Nm is a gearbox guess. -->
         <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher"></plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_1</joint_name>
             <initial_position>0.0</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_2</joint_name>
             <initial_position>-0.5236</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_br_servo_3</joint_name>
             <initial_position>1.5472</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_1</joint_name>
             <initial_position>0.0</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_2</joint_name>
             <initial_position>-0.5236</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_bl_servo_3</joint_name>
             <initial_position>1.5472</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_1</joint_name>
             <initial_position>0.0</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_2</joint_name>
             <initial_position>-0.5236</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fr_servo_3</joint_name>
             <initial_position>1.5472</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_1</joint_name>
             <initial_position>0.0</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_2</joint_name>
             <initial_position>-0.5236</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cr_servo_3</joint_name>
             <initial_position>1.5472</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_1</joint_name>
             <initial_position>0.0</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_2</joint_name>
             <initial_position>-0.5236</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_cl_servo_3</joint_name>
             <initial_position>1.5472</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_1</joint_name>
             <initial_position>0.0</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_2</joint_name>
             <initial_position>-0.5236</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
             <joint_name>leg_fl_servo_3</joint_name>
             <initial_position>1.5472</initial_position>
-            <use_velocity_commands>1</use_velocity_commands>
+            <p_gain>5.0</p_gain>
+            <i_gain>0</i_gain>
+            <d_gain>0</d_gain>
+            <cmd_max>1.4</cmd_max>
+            <cmd_min>-1.4</cmd_min>
         </plugin>
         <plugin filename="gz-sim-imu-system"
                 name="gz::sim::systems::Imu">
@@ -1116,9 +1192,13 @@
             <child>leg_br_2xl_430</child>
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-1.57</lower>
                     <upper>1.57</upper>
                 </limit>
@@ -1130,9 +1210,13 @@
             <child>leg_br_coxa</child>
             <axis>
                 <xyz expressed_in="leg_br_2xl_430">1 0 0</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
                 </limit>
@@ -1144,9 +1228,13 @@
             <child>leg_br_xl_430</child>
             <axis>
                 <xyz expressed_in="leg_br_xl_430">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
                 </limit>
@@ -1163,9 +1251,13 @@
             <child>leg_cr_2xl_430</child>
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
                 </limit>
@@ -1177,9 +1269,13 @@
             <child>leg_cr_coxa</child>
             <axis>
                 <xyz expressed_in="leg_cr_2xl_430">1 0 0</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
                 </limit>
@@ -1191,9 +1287,13 @@
             <child>leg_cr_xl_430</child>
             <axis>
                 <xyz expressed_in="leg_cr_xl_430">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
                 </limit>
@@ -1210,9 +1310,13 @@
             <child>leg_fr_2xl_430</child>
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
                 </limit>
@@ -1224,9 +1328,13 @@
             <child>leg_fr_coxa</child>
             <axis>
                 <xyz expressed_in="leg_fr_2xl_430">1 0 0</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
                 </limit>
@@ -1238,9 +1346,13 @@
             <child>leg_fr_xl_430</child>
             <axis>
                 <xyz expressed_in="leg_fr_xl_430">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
                 </limit>
@@ -1257,9 +1369,13 @@
             <child>leg_bl_2xl_430</child>
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
                 </limit>
@@ -1271,9 +1387,13 @@
             <child>leg_bl_coxa</child>
             <axis>
                 <xyz expressed_in="leg_bl_2xl_430">1 0 0</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
                 </limit>
@@ -1285,9 +1405,13 @@
             <child>leg_bl_xl_430</child>
             <axis>
                 <xyz expressed_in="leg_bl_xl_430">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
                 </limit>
@@ -1304,9 +1428,13 @@
             <child>leg_cl_2xl_430</child>
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
                 </limit>
@@ -1318,9 +1446,13 @@
             <child>leg_cl_coxa</child>
             <axis>
                 <xyz expressed_in="leg_cl_2xl_430">1 0 0</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
                 </limit>
@@ -1332,9 +1464,13 @@
             <child>leg_cl_xl_430</child>
             <axis>
                 <xyz expressed_in="leg_cl_xl_430">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
                 </limit>
@@ -1351,9 +1487,13 @@
             <child>leg_fl_2xl_430</child>
             <axis>
                 <xyz expressed_in="__model__">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-0.78539</lower>
                     <upper>0.78539</upper>
                 </limit>
@@ -1365,9 +1505,13 @@
             <child>leg_fl_coxa</child>
             <axis>
                 <xyz expressed_in="leg_fl_2xl_430">1 0 0</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-1.570796</lower>
                     <upper>1.570796</upper>
                 </limit>
@@ -1379,9 +1523,13 @@
             <child>leg_fl_xl_430</child>
             <axis>
                 <xyz expressed_in="leg_fl_xl_430">0 0 1</xyz>
+                <dynamics>
+                    <damping>0.23</damping>
+                    <friction>0.03</friction>
+                </dynamics>
                 <limit>
-                    <effort>5</effort>
-                    <velocity>6</velocity>
+                    <effort>1.4</effort>
+                    <velocity>10</velocity>
                     <lower>-2.570796</lower>
                     <upper>2.570796</upper>
                 </limit>

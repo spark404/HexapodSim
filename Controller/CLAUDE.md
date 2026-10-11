@@ -75,7 +75,7 @@ The project is split into two sibling directories under `HexapodSim/`:
 ### Key Configuration Files
 
 - **`robot_config.h`** — Leg mount positions, servo angle limits, step size (80mm), and servo ID mappings for all 6 legs (FR, CR, BR, FL, CL, BL).
-- **`controller_config.h`** — Control loop timing (200ms period), motion parameters (body height 100mm, lift height 50mm, default velocity 50mm/s).
+- **`controller_config.h`** — Control loop timing (100ms controller tick; the 25 Hz servo loop lives in `HexapodController.cpp`), motion parameters (body height 100mm, lift height 50mm, default velocity 50mm/s).
 - **`controller_types.h`** — State machine enums and the main `controller_ctx_t` struct.
 - **`robot.h`** — Runtime robot state structs (leg poses, angles, tip positions, grounded status).
 
@@ -108,23 +108,26 @@ Fetched automatically by CMake if not found locally:
 
 ### Joint limits (`HexSpider/models/hexspider/hexspider.sdf`)
 
-All 18 joints use `gz-sim-joint-position-controller-system`. Tuned values:
+All 18 joints use `gz-sim-joint-position-controller-system` in force (PID) mode, configured to behave like a Dynamixel XL430 / 2XL430 in position mode at ~11.1 V. All servos use the same values:
 
-| Servo | Role | `p_gain` | `i_gain` | `d_gain` | `effort` |
-|-------|------|----------|----------|----------|----------|
-| servo_1 | coxa (yaw) | 125 | 0 | 0 | 3 Nm |
-| servo_2 | femur (pitch) | 125 | 0 | 0 | 5 Nm |
-| servo_3 | tibia (extend) | 125 | 0 | 0 | 8 Nm |
+| Parameter | Value | Dynamixel equivalent |
+|-----------|-------|----------------------|
+| `p_gain` | 5 Nm/rad | Position P Gain 640 (default): full PWM at ~0.27 rad error |
+| `i_gain` / `d_gain` | 0 | Position I / D Gain 0 (default) |
+| `cmd_max` / `cmd_min`, `<effort>` | ±1.4 Nm | stall torque at 11.1 V (1.5 Nm at 12 V) |
+| joint `<damping>` | 0.23 Nm·s/rad | stall torque / no-load speed (1.4 / 5.97 rad/s): motor back-EMF |
+| joint `<friction>` | 0.03 Nm | gearbox friction (estimate, not measured) |
+| `<velocity>` | 10 rad/s | not limiting; the damping sets the ~57 rpm top speed |
 
-Velocity limit is `6 rad/s` (≈57 RPM, matching XL430-W250 spec). Ki and Kd should remain 0 — Ki causes integrator windup over the 200ms gait cycle; Kd causes derivative kick on every 100ms command step change.
+The P loop capped at stall torque plus joint damping reproduces the DC motor's linear torque-speed curve. Do not switch back to `use_velocity_commands`: that mode tracks the target at error/dt (1 ms), an effectively rigid servo that hides compliance and lets stance legs fight each other through the ground (±10% run-to-run scatter, and it needs ~5 Nm to walk).
 
-The effort limits are intentionally below the unrealistic original value of 362 Nm. They reflect the actual load hierarchy: the tibia bears ground reaction forces directly and needs the highest headroom.
+Because the servos are compliant, a loaded joint needs a standing position error to carry load (the body sags ~7 mm at standing height). The controller therefore plans stand-up and swing starts from the last commanded joint angles (`next_joint_angles`), not the measured ones. Planning from measured angles stalls STANDUP.
 
 ### Contact / friction (`HexSpider/models/hexspider/hexspider.sdf` and `hexspider_world.sdf`)
 
-Foot collision geometry: 5mm-radius cylinder on each `leg_XX_femur` link.
+Foot collision geometry: the femur mesh (`Femur_20260405_1.stl`) on each `leg_XX_femur` link; the contact point is the lowest part of the mesh and rolls along it as the leg moves.
 
-Both the foot surface and the ground plane use:
+Both the foot surface and the ground plane use the values below. Lower ground friction (e.g. 0.8/0.4) causes measurable foot slip and speed loss:
 ```xml
 <surface>
   <friction><ode><mu>1.0</mu><mu2>1.0</mu2></ode></friction>

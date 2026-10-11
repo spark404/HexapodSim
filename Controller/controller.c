@@ -115,14 +115,17 @@ void tripod_init_gait(controller_ctx_t *ctx, const arm_matrix_instance_f32 *Thex
 
 /**
  * Calculates the current position of leg in the body frame using
- * the actual joint angles and forward kinematics.
+ * the last commanded joint angles and forward kinematics. Planning from the
+ * commanded rather than the measured position lets a compliant servo build up
+ * the position error it needs to carry load; planning from the measured
+ * position stalls a loaded leg one small step ahead of where it already is.
  *
  * @param current_leg_state
  * @param p_current_in_body_frame
  */
 void leg_current_position_body(struct leg_state *current_leg_state, float32_t p_current_in_body_frame[3]) {
     float32_t p_current_in_coxa_frame[3];
-    forward_kinematics(current_leg_state->actual_joint_angles, p_current_in_coxa_frame);
+    forward_kinematics(current_leg_state->next_joint_angles, p_current_in_coxa_frame);
     matrix_3d_vec_transform(&current_leg_state->coxa_mat, p_current_in_coxa_frame, p_current_in_body_frame);
 }
 
@@ -302,7 +305,7 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
             // Use last commanded position (next_joint_angles) instead of actual position
             // to ensure smooth, continuous trajectory that the servo task can track
             float32_t p_current_in_coxa_frame[3];
-            forward_kinematics(current_leg_state->actual_joint_angles, p_current_in_coxa_frame);
+            forward_kinematics(current_leg_state->next_joint_angles, p_current_in_coxa_frame);
 
             float32_t p_current_in_body_frame[3];
             matrix_3d_vec_transform(&current_leg_state->coxa_mat, p_current_in_coxa_frame, p_current_in_body_frame);
