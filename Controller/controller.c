@@ -273,19 +273,12 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
         }
 
         if (!has_valid_data) {
-            LOG_DEBUG("SYNC: Waiting for valid joint data...");
             return; // Stay in SYNCING until we get real data
         }
 
         for (int i = 0; i < 6; i++) {
             arm_vec_copy_f32(ctx->robot.leg_state[i].actual_joint_angles,
                              ctx->robot.leg_state[i].next_joint_angles, 3);
-            if (i == 0) {
-                LOG_DEBUG("SYNC Leg 0 angles: %.3f, %.3f, %.3f",
-                    ctx->robot.leg_state[i].actual_joint_angles[0],
-                    ctx->robot.leg_state[i].actual_joint_angles[1],
-                    ctx->robot.leg_state[i].actual_joint_angles[2]);
-            }
         }
         ctx->next_state = CTRL_STANDUP;
     } else if (ctx->state == CTRL_STANDUP) {
@@ -328,16 +321,6 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
             if (distance_remaining > CTRL_CLOSE_THRESH) {
                 ready = 0;
             };
-
-            if (i==0) {
-                LOG_DEBUG("C: %.3f, %.3f, %.3f; T: %.3f, %.3f, %.3f",
-                    p_current_in_body_frame[0], p_current_in_body_frame[1], p_current_in_body_frame[2],
-                    p_target_in_body_frame[0], p_target_in_body_frame[1], p_target_in_body_frame[2]);
-                LOG_DEBUG("A: %.3f, %.3f, %.3f; N: %.3f, %.3f, %.3f; T: %.3f, %.3f, %.3f",
-                    current_leg_state->actual_joint_angles[0], current_leg_state->actual_joint_angles[1], current_leg_state->actual_joint_angles[2],
-                    current_leg_state->next_joint_angles[0], current_leg_state->next_joint_angles[1], current_leg_state->next_joint_angles[2],
-                    target_joint_angles[0], target_joint_angles[1], target_joint_angles[2]);
-            }
         }
 
         if (ready) {
@@ -356,9 +339,6 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
     } else if (ctx->state == CTRL_WALKING) {
         // Ensure tripod consistency (only re-init if all legs grounded)
         tripod_init_gait(ctx, &Thexapod_body);
-
-        LOG_DEBUG("Actual: %5.2f, %5.2f, %5.2f", ctx->robot.leg_state[1].actual_joint_angles[0], ctx->robot.leg_state[1].actual_joint_angles[1], ctx->robot.leg_state[1].actual_joint_angles[2] );
-        LOG_DEBUG("Next: %5.2f, %5.2f, %5.2f", ctx->robot.leg_state[1].next_joint_angles[0], ctx->robot.leg_state[1].next_joint_angles[1], ctx->robot.leg_state[1].next_joint_angles[2] );
 
         // 1) Compute desired rotation for this timestep
         float32_t desired_omega = ctx->yaw_error / dt_s;
@@ -542,11 +522,6 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
                         3
                     )
                 );
-                if (i==1) {
-                    LOG_DEBUG("Path length: %5.2f", remaining_path_length);
-                    LOG_DEBUG("P_NEXT_BODY: %5.2f, %5.2f, %5.2f", p_next_body[0], p_next_body[1], p_next_body[2]);
-                    LOG_DEBUG("P_TARGET: %5.2f, %5.2f, %5.2f", paths[i][3][0], paths[i][3][1], paths[i][3][2]);
-                }
                 arm_vec_copy_f32(p_next_world, leg->tip_world_coordinates, 3);
             }
 
@@ -557,7 +532,6 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
             inverse_kinematics(origin3, p_next_coxa, leg->next_joint_angles);
         }
 
-        LOG_DEBUG("Remaining: %5.2f", remaining_path_length);
         if (remaining_path_length < CTRL_CLOSE_THRESH) {
             swap_legs(ctx);
         }
