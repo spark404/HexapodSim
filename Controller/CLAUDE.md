@@ -13,6 +13,20 @@ ninja
 
 The executables are output to `build/Controller` and `build/HexapodControl` (or `cmake-build-debug/` for CLion debug builds). Always rebuild from the `Controller/` directory, not from inside `build/`, to keep the working directory correct for relative paths.
 
+## Tests
+
+```bash
+# From the Controller directory, after one build (the test uses the host builds of the dependencies)
+tests/controller_equivalence/run.sh
+```
+
+`controller.c` exists twice: here and in the firmware (`../../Hexapod-Controller/Core/Src/controller.c`).
+The test runs both through stand up, 30 s of walking and the stop with ideal servos and requires the same
+joint angles on every tick. The one intended difference, planning from the commanded instead of the measured
+joint angles, does not show with ideal servos, so any other change that lands in only one of the copies fails
+the test. Set `FIRMWARE_DIR`, `DEPS_DIR` or `SIM_DIR` when the defaults do not fit; exit code 1 is a difference,
+2 a missing prerequisite.
+
 ## Running the Simulation
 
 Three terminals are typically needed:
