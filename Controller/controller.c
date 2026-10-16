@@ -81,6 +81,10 @@ void swap_legs(controller_ctx_t *ctx) {
     for (int i = 0; i < 6; i++) {
         struct leg_state *current_leg_state = &ctx->robot.leg_state[i];
         current_leg_state->grounded = !current_leg_state->grounded;
+        // Mark swing trajectory invalid; legs that just became lifted will
+        // recompute their path on the next walking tick.
+        current_leg_state->swing_path_length = 0.0f;
+        current_leg_state->swing_progress = 0.0f;
     }
 }
 
@@ -99,7 +103,8 @@ void tripod_init_gait(controller_ctx_t *ctx, const arm_matrix_instance_f32 *Thex
         ctx->robot.leg_state[3].grounded = 0;
         ctx->robot.leg_state[5].grounded = 0;
 
-        // Use the actual angles to determine the current world coordinates of the tip
+        // Use the actual angles to determine the current world coordinates of the tip,
+        // and reset every leg's swing trajectory so newly-lifted legs recompute it.
         for (int i = 0; i < 6; i++) {
             struct leg_state *current_leg_state = &ctx->robot.leg_state[i];
 
@@ -109,6 +114,9 @@ void tripod_init_gait(controller_ctx_t *ctx, const arm_matrix_instance_f32 *Thex
             float32_t tip_in_coxa[3];
             forward_kinematics(current_leg_state->actual_joint_angles, tip_in_coxa);
             matrix_3d_vec_transform(&T, tip_in_coxa, current_leg_state->tip_world_coordinates);
+
+            current_leg_state->swing_path_length = 0.0f;
+            current_leg_state->swing_progress = 0.0f;
         }
     }
 }
@@ -442,22 +450,40 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
 
                 longest_path = fmaxf(longest_path, path_length);
             } else {
-                float32_t arc_disp[2] = {
-                    movement_vector[0] + rot_disp[0],
-                    movement_vector[1] + rot_disp[1]
-                };
+                // Compute the lift trajectory once, at the start of the swing.
+                // Subsequent ticks advance swing_progress along the stored path,
+                // so servo lag can't drift the leg off-trajectory and never
+                // converge.
+                if (leg->swing_path_length == 0.0f) {
+                    float32_t arc_disp[2] = {
+                        movement_vector[0] + rot_disp[0],
+                        movement_vector[1] + rot_disp[1]
+                    };
+                    leg_generate_path(
+                        body_z,
+                        p_current,
+                        CTRL_LEG_RADIUS_MM,
+                        origin,
+                        arc_disp,
+                        true,
+                        leg->swing_path
+                    );
+                    // leg_generate_path returns the straight-line distance from
+                    // start to target, but we need to advance swing_progress
+                    // along the actual lift+travel+lower arc. Use the summed
+                    // segment length instead.
+                    leg->swing_path_length = calculate_path_length(leg->swing_path);
+                    leg->swing_progress = 0.0f;
+                }
 
-                float32_t path_length = leg_generate_path(
-                    body_z,
-                    p_current,
-                    CTRL_LEG_RADIUS_MM,
-                    origin,
-                    arc_disp,
-                    true,
-                    paths[i]
-                );
+                // Mirror the stored swing path into paths[i] so the second
+                // loop's distance/IK code keeps a uniform interface.
+                for (int j = 0; j < 4; j++) {
+                    arm_vec_copy_f32(leg->swing_path[j], paths[i][j], 3);
+                }
 
-                longest_lifted_path = fmaxf(longest_lifted_path, path_length);
+                float32_t swing_remaining = leg->swing_path_length - leg->swing_progress;
+                longest_lifted_path = fmaxf(longest_lifted_path, swing_remaining);
             }
         }
 
@@ -498,11 +524,27 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
             float32_t substeps = longest_path / effective_velocity;
             substeps = fmaxf(substeps, 1.0f);
 
-            float32_t path_length = calculate_path_length(paths[i]);
-            float32_t step_length = path_length / substeps;
-
+            // Lifted legs interpolate along the stored swing path; the
+            // step_length ratchets swing_progress monotonically forward.
+            // Grounded legs keep the old "current -> body-frame target"
+            // computation, but the result is overwritten below with the
+            // foot's planted world position, so step_length there only
+            // matters for the log line.
+            float32_t path_length;
+            float32_t step_length;
             float32_t delta[3] = {0.0f, 0.0f, 0.0f};
-            interpolate(paths[i], step_length, delta);
+            if (leg->grounded) {
+                path_length = calculate_path_length(paths[i]);
+                step_length = path_length / substeps;
+                interpolate(paths[i], step_length, delta);
+            } else {
+                path_length = leg->swing_path_length - leg->swing_progress;
+                step_length = path_length / substeps;
+                leg->swing_progress = fminf(
+                    leg->swing_progress + step_length,
+                    leg->swing_path_length);
+                interpolate(leg->swing_path, leg->swing_progress, delta);
+            }
 
             float32_t p_next_body[3];
             arm_vec_copy_f32(delta, p_next_body, 3);
@@ -510,18 +552,13 @@ void controller_update(controller_ctx_t *ctx, const controller_attitude_t *attit
             float32_t p_next_world[3];
             matrix_3d_vec_transform(&Thexapod_body, p_next_body, p_next_world);
 
+            float32_t leg_dist_to_target = arm_euclidean_distance_f32(p_next_body, paths[i][3], 3);
+
             if (leg->grounded) {
                 // Use the existing coordinates for the world frame
                 arm_vec_copy_f32(leg->tip_world_coordinates, p_next_world, 3);
             } else {
-                remaining_path_length = fmaxf(
-                    remaining_path_length,
-                    arm_euclidean_distance_f32(
-                        p_next_body,
-                        paths[i][3],
-                        3
-                    )
-                );
+                remaining_path_length = fmaxf(remaining_path_length, leg_dist_to_target);
                 arm_vec_copy_f32(p_next_world, leg->tip_world_coordinates, 3);
             }
 

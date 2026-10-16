@@ -43,6 +43,11 @@ struct leg_state {
     uint8_t grounded;
     /// Tip position in the world fram
     float32_t tip_world_coordinates[3];
+    /// Swing-phase trajectory, computed once at lift-start and advanced each tick.
+    /// swing_path_length == 0 marks "uninitialized; recompute on next lifted tick".
+    float32_t swing_path[4][3];
+    float32_t swing_path_length;
+    float32_t swing_progress;
 };
 
 struct robot_state {
